@@ -60,7 +60,7 @@ import org.openflexo.ta.json.model.JSONNode;
 @ModelEntity
 @ImplementationClass(JSONNodeRole.JSONNodeRoleImpl.class)
 @XMLElement
-@FML("XXLineRole")
+@FML("JSONNodeRole")
 public interface JSONNodeRole extends FlexoRole<JSONNode> {
 
 	public static abstract class JSONNodeRoleImpl extends FlexoRoleImpl<JSONNode> implements JSONNodeRole {

@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.ta.xx;
+package org.openflexo.ta.json;
 
 import static org.junit.Assert.assertNotNull;
 

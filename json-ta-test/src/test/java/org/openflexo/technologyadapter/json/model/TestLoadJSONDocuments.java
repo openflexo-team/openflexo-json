@@ -49,11 +49,11 @@ import org.junit.runner.RunWith;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
+import org.openflexo.ta.json.AbstractJSONTest;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
 import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.rm.JSONResource;
 import org.openflexo.ta.json.rm.JSONResourceRepository;
-import org.openflexo.ta.xx.AbstractJSONTest;
 import org.openflexo.test.OrderedRunner;
 import org.openflexo.test.TestOrder;
 
