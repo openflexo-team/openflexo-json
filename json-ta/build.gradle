@@ -1,0 +1,21 @@
+dependencies {
+  // openflexo dep
+  implementation flexoFoundation()
+  implementation flexoOntology()
+  // external dep
+  // Define here your dependancies
+  //implementation 'my.library:artefact-name:1.0.0'
+
+  // testing dep
+  testImplementation testUtils()
+  testImplementation flexoFoundationTest()
+
+  // A particular resource center can be defined here
+  // If it always required to be present at run-time
+  //runtimeOnly project(':xx-ta-rc')
+
+  // Test resource center, if required
+  // testRuntimeOnly project(':xx-ta-test-rc')
+
+}
+

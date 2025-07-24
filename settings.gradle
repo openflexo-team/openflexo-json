@@ -1,0 +1,4 @@
+include 'json-ta',
+    'json-ta-ui',
+    'json-ta-test',
+    'json-ta-test-rc'

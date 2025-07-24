@@ -1,2 +1,2 @@
-# openflexo-json
-JSON technology adapter
+# openflexo-capella
+Capella Technology Adapter

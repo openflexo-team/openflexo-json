@@ -1,0 +1,15 @@
+dependencies {
+  implementation project(":json-ta")
+
+  // openflexo dep
+  implementation flexoUi()
+
+  runtimeOnly fmlTechnologyAdapterUi()
+
+  // external dep
+  // testing dep
+  testImplementation flexoUiTest()
+
+  // Test resource center, if required
+ // testRuntimeOnly project(':xx-ta-test-rc')
+}
