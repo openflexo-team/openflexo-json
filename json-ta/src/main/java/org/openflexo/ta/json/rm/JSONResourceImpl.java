@@ -64,6 +64,9 @@ import org.openflexo.ta.json.model.XXModelFactory;
 import org.openflexo.ta.json.model.XXText;
 import org.openflexo.toolbox.FileUtils;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Default implementation for a resource storing a {@link XXText}
  * 
@@ -236,6 +239,33 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXMode
 			}
 		}
 		logger.info("Wrote " + getIODelegate().getSerializationArtefact());
+	}
+
+	public static void main(String[] args) {
+		File f = new File("/Users/sylvainguerin/GIT-2.99/openflexo-json/json-ta-test-rc/src/main/resources/JSON/Alice.json");
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		try {
+			JsonNode root = mapper.readTree(f);
+
+			String nom = root.get("nom").asText();
+			int age = root.get("age").asInt();
+
+			JsonNode adresse = root.get("adresse");
+			String ville = adresse.get("ville").asText();
+
+			JsonNode hobbies = root.get("hobbies");
+			for (JsonNode hobby : hobbies) {
+				System.out.println("Hobby: " + hobby.asText());
+			}
+
+			System.out.println("Nom: " + nom);
+			System.out.println("Ville: " + ville);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

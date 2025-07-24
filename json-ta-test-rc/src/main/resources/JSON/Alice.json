@@ -1,0 +1,9 @@
+{
+  "nom": "Alice",
+  "age": 30,
+  "adresse": {
+    "ville": "Paris",
+    "codePostal": "75000"
+  },
+  "hobbies": ["lecture", "musique"]
+}

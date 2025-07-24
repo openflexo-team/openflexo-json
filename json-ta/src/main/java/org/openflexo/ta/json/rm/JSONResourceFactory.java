@@ -61,7 +61,7 @@ public class JSONResourceFactory
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(JSONResourceFactory.class.getPackage().getName());
 
-	public static String TXT_FILE_EXTENSION = ".txt";
+	public static String JSON_FILE_EXTENSION = ".json";
 
 	public JSONResourceFactory() throws ModelDefinitionException {
 		super(JSONResource.class);
@@ -74,7 +74,7 @@ public class JSONResourceFactory
 
 	@Override
 	public <I> boolean isValidArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
-		return (resourceCenter.retrieveName(serializationArtefact).endsWith(TXT_FILE_EXTENSION))
+		return (resourceCenter.retrieveName(serializationArtefact).endsWith(JSON_FILE_EXTENSION))
 				&& !(resourceCenter.retrieveName(serializationArtefact).startsWith("~"));
 	}
 

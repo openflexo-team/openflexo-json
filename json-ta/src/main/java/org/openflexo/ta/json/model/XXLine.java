@@ -130,6 +130,7 @@ public interface XXLine extends XXObject {
 		private static final Logger logger = Logger.getLogger(XXLine.class.getPackage().getName());
 
 		public XXLineImpl() {
+
 		}
 
 		@Override
