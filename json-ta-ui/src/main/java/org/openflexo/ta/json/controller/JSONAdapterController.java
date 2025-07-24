@@ -57,7 +57,7 @@ import org.openflexo.ta.json.gui.JSONIconLibrary;
 import org.openflexo.ta.json.model.JSONNode;
 import org.openflexo.ta.json.model.JSONObject;
 import org.openflexo.ta.json.model.JSONDocument;
-import org.openflexo.ta.json.view.XXTextView;
+import org.openflexo.ta.json.view.JSONDocumentView;
 import org.openflexo.view.EmptyPanel;
 import org.openflexo.view.ModuleView;
 import org.openflexo.view.controller.ControllerActionInitializer;
@@ -214,7 +214,7 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 	public ModuleView<?> createModuleViewForMasterObject(TechnologyObject<JSONTechnologyAdapter> object, FlexoController controller,
 			FlexoPerspective perspective) {
 		if (object instanceof JSONDocument) {
-			XXTextView returned = new XXTextView((JSONDocument) object, controller, perspective);
+			JSONDocumentView returned = new JSONDocumentView((JSONDocument) object, controller, perspective);
 			return returned;
 		}
 		return new EmptyPanel<>(controller, perspective, object);

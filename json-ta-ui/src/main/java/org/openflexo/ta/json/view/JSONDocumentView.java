@@ -44,8 +44,9 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.selection.SelectionListener;
 import org.openflexo.selection.SelectionManager;
@@ -55,26 +56,27 @@ import org.openflexo.view.controller.FlexoController;
 import org.openflexo.view.controller.model.FlexoPerspective;
 
 /**
- * This class represent the module view for a XXText.<br>
+ * This class represent the module view for a {@link JSONDocument}<br>
  * 
  * @author sylvain
  * 
  */
 @SuppressWarnings("serial")
-public class XXTextView extends JPanel implements SelectionSynchronizedModuleView<JSONDocument> {
+public class JSONDocumentView extends JPanel implements SelectionSynchronizedModuleView<JSONDocument> {
 
 	private final JSONDocument text;
 	private final FlexoPerspective declaredPerspective;
 
 	private final FlexoController controller;
-	private JTextArea textArea;
+	private RSyntaxTextArea textArea;
 
-	public XXTextView(JSONDocument text, FlexoController controller, FlexoPerspective perspective) {
+	public JSONDocumentView(JSONDocument text, FlexoController controller, FlexoPerspective perspective) {
 		super(new BorderLayout());
 		this.controller = controller;
 		declaredPerspective = perspective;
 		this.text = text;
-		textArea = new JTextArea();
+		textArea = new RSyntaxTextArea();
+		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS);
 		textArea.setText(text.getContents());
 		add(new JScrollPane(textArea), BorderLayout.CENTER);
 	}
@@ -186,7 +188,7 @@ public class XXTextView extends JPanel implements SelectionSynchronizedModuleVie
 	public void removeFromSelected(Vector<? extends FlexoObject> objects) {
 		getSelectionManager().removeFromSelected(objects);
 	}
-	
+
 	@Override
 	public void setSelectedObjects(Vector<? extends FlexoObject> objects) {
 		getSelectionManager().setSelectedObjects(objects);
