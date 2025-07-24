@@ -56,14 +56,14 @@ import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONModelSlot;
-import org.openflexo.ta.json.model.XXLine;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONNode;
+import org.openflexo.ta.json.model.JSONDocument;
 
 @ModelEntity
 @ImplementationClass(AddXXLine.AddXXLineImpl.class)
 @XMLElement
 @FML("AddXXLine")
-public interface AddXXLine extends XXAction<XXLine> {
+public interface AddXXLine extends XXAction<JSONNode> {
 
 	@PropertyIdentifier(type = DataBinding.class)
 	public static final String LINE_NUMBER_KEY = "lineNumber";
@@ -75,7 +75,7 @@ public interface AddXXLine extends XXAction<XXLine> {
 	@Setter(LINE_NUMBER_KEY)
 	public void setLineNumber(DataBinding<Integer> lineNumber);
 
-	public static abstract class AddXXLineImpl extends TechnologySpecificActionDefiningReceiverImpl<JSONModelSlot, XXText, XXLine>
+	public static abstract class AddXXLineImpl extends TechnologySpecificActionDefiningReceiverImpl<JSONModelSlot, JSONDocument, JSONNode>
 			implements AddXXLine {
 
 		private static final Logger logger = Logger.getLogger(AddXXLine.class.getPackage().getName());
@@ -84,15 +84,15 @@ public interface AddXXLine extends XXAction<XXLine> {
 
 		@Override
 		public Type getAssignableType() {
-			return XXLine.class;
+			return JSONNode.class;
 		}
 
 		@Override
-		public XXLine execute(RunTimeEvaluationContext evaluationContext) {
+		public JSONNode execute(RunTimeEvaluationContext evaluationContext) {
 
-			XXLine line = null;
+			JSONNode line = null;
 
-			XXText resourceData = getReceiver(evaluationContext);
+			JSONDocument resourceData = getReceiver(evaluationContext);
 
 			try {
 				if (resourceData != null) {

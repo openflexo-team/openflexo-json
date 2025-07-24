@@ -44,7 +44,7 @@ import org.openflexo.foundation.fml.annotations.DeclareModelSlots;
 import org.openflexo.foundation.fml.annotations.DeclareResourceFactories;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
-import org.openflexo.ta.json.fml.binding.XXBindingFactory;
+import org.openflexo.ta.json.fml.binding.JSONBindingFactory;
 import org.openflexo.ta.json.rm.JSONResourceFactory;
 import org.openflexo.ta.json.rm.JSONResourceRepository;
 
@@ -67,7 +67,7 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(JSONTechnologyAdapter.class.getPackage().getName());
 
-	private static final XXBindingFactory BINDING_FACTORY = new XXBindingFactory();
+	private static final JSONBindingFactory BINDING_FACTORY = new JSONBindingFactory();
 
 	@Override
 	public String getName() {
@@ -82,7 +82,7 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 	@Override
 	public void ensureAllRepositoriesAreCreated(FlexoResourceCenter<?> rc) {
 		super.ensureAllRepositoriesAreCreated(rc);
-		getXXResourceRepository(rc);
+		getJSONResourceRepository(rc);
 
 	}
 
@@ -92,7 +92,7 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 	}
 
 	@Override
-	public XXBindingFactory getTechnologyAdapterBindingFactory() {
+	public JSONBindingFactory getTechnologyAdapterBindingFactory() {
 		return BINDING_FACTORY;
 	}
 
@@ -106,7 +106,7 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 	}
 
 	@SuppressWarnings("unchecked")
-	public <I> JSONResourceRepository<I> getXXResourceRepository(FlexoResourceCenter<I> resourceCenter) {
+	public <I> JSONResourceRepository<I> getJSONResourceRepository(FlexoResourceCenter<I> resourceCenter) {
 		JSONResourceRepository<I> returned = resourceCenter.retrieveRepository(JSONResourceRepository.class, this);
 		if (returned == null) {
 			returned = JSONResourceRepository.instanciateNewRepository(this, resourceCenter);

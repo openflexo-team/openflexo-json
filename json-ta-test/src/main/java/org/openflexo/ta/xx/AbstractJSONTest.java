@@ -48,18 +48,19 @@ import org.openflexo.foundation.resource.FlexoResource;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.rm.JSONResource;
 
-public abstract class AbstractXXTest extends OpenflexoProjectAtRunTimeTestCase {
-	protected static final Logger logger = Logger.getLogger(AbstractXXTest.class.getPackage().getName());
+public abstract class AbstractJSONTest extends OpenflexoProjectAtRunTimeTestCase {
+	protected static final Logger logger = Logger.getLogger(AbstractJSONTest.class.getPackage().getName());
 
-	protected JSONResource getXXResource(String documentName, FlexoResourceCenter<?> resourceCenter) {
+	protected JSONResource getJSONResource(String documentName, FlexoResourceCenter<?> resourceCenter) {
 
-		String documentURI = resourceCenter.getDefaultBaseURI() + "/" + "XX" + "/" + documentName;
+		String documentURI = resourceCenter.getDefaultBaseURI() + "/" + "JSON" + "/" + documentName;
 		System.out.println("Searching " + documentURI);
 
-		JSONResource documentResource = (JSONResource) serviceManager.getResourceManager().getResource(documentURI, null, XXText.class);
+		JSONResource documentResource = (JSONResource) serviceManager.getResourceManager().getResource(documentURI, null,
+				JSONDocument.class);
 
 		if (documentResource == null) {
 			logger.warning("Cannot find document resource " + documentURI);
@@ -73,20 +74,20 @@ public abstract class AbstractXXTest extends OpenflexoProjectAtRunTimeTestCase {
 		return documentResource;
 	}
 
-	protected JSONResource getXXResource(String documentName) {
+	protected JSONResource getJSONResource(String documentName) {
 
 		FlexoResourceCenter<?> resourceCenter = serviceManager.getResourceCenterService()
-				.getFlexoResourceCenter("http://www.openflexo.org/test/xx");
+				.getFlexoResourceCenter("http://www.openflexo.org/test/json");
 
-		return getXXResource(documentName, resourceCenter);
+		return getJSONResource(documentName, resourceCenter);
 	}
 
-	protected XXText getXXText(String documentName) {
+	protected JSONDocument getJSONDocument(String documentName) {
 
-		JSONResource documentResource = getXXResource(documentName);
+		JSONResource documentResource = getJSONResource(documentName);
 		assertNotNull(documentResource);
 
-		XXText document = null;
+		JSONDocument document = null;
 		try {
 			document = documentResource.getResourceData();
 		} catch (FileNotFoundException e) {

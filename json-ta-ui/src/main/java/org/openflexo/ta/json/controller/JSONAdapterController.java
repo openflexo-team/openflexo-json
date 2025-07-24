@@ -50,13 +50,13 @@ import org.openflexo.gina.utils.InspectorGroup;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
-import org.openflexo.ta.json.fml.XXLineRole;
+import org.openflexo.ta.json.fml.JSONNodeRole;
 import org.openflexo.ta.json.fml.editionaction.AbstractSelectXXLine;
 import org.openflexo.ta.json.fml.editionaction.AddXXLine;
 import org.openflexo.ta.json.gui.JSONIconLibrary;
-import org.openflexo.ta.json.model.XXLine;
-import org.openflexo.ta.json.model.XXObject;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONNode;
+import org.openflexo.ta.json.model.JSONObject;
+import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.view.XXTextView;
 import org.openflexo.view.EmptyPanel;
 import org.openflexo.view.ModuleView;
@@ -131,7 +131,7 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 	 */
 	@Override
 	public ImageIcon getModelIcon() {
-		return JSONIconLibrary.XX_TEXT_ICON;
+		return JSONIconLibrary.JSON_DOCUMENT_ICON;
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 	 */
 	@Override
 	public ImageIcon getMetaModelIcon() {
-		return JSONIconLibrary.XX_TEXT_ICON;
+		return JSONIconLibrary.JSON_DOCUMENT_ICON;
 	}
 
 	/**
@@ -152,8 +152,8 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 	 */
 	@Override
 	public ImageIcon getIconForTechnologyObject(Class<? extends TechnologyObject<?>> objectClass) {
-		if (XXObject.class.isAssignableFrom(objectClass)) {
-			return JSONIconLibrary.iconForObject((Class<? extends XXObject>) objectClass);
+		if (JSONObject.class.isAssignableFrom(objectClass)) {
+			return JSONIconLibrary.iconForObject((Class<? extends JSONObject>) objectClass);
 		}
 		return null;
 	}
@@ -166,8 +166,8 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 	 */
 	@Override
 	public ImageIcon getIconForFlexoRole(Class<? extends FlexoRole<?>> patternRoleClass) {
-		if (XXLineRole.class.isAssignableFrom(patternRoleClass)) {
-			return getIconForTechnologyObject(XXLine.class);
+		if (JSONNodeRole.class.isAssignableFrom(patternRoleClass)) {
+			return getIconForTechnologyObject(JSONNode.class);
 		}
 		return null;
 	}
@@ -181,22 +181,22 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 	@Override
 	public ImageIcon getIconForEditionAction(Class<? extends EditionAction> editionActionClass) {
 		if (AddXXLine.class.isAssignableFrom(editionActionClass)) {
-			return IconFactory.getImageIcon(getIconForTechnologyObject(XXLine.class), IconLibrary.DUPLICATE);
+			return IconFactory.getImageIcon(getIconForTechnologyObject(JSONNode.class), IconLibrary.DUPLICATE);
 		}
 		else if (AbstractSelectXXLine.class.isAssignableFrom(editionActionClass)) {
-			return IconFactory.getImageIcon(getIconForTechnologyObject(XXLine.class), IconLibrary.IMPORT);
+			return IconFactory.getImageIcon(getIconForTechnologyObject(JSONNode.class), IconLibrary.IMPORT);
 		}
 		return super.getIconForEditionAction(editionActionClass);
 	}
 
 	@Override
 	public boolean isRepresentableInModuleView(TechnologyObject<JSONTechnologyAdapter> object) {
-		return object instanceof XXText;
+		return object instanceof JSONDocument;
 	}
 
 	@Override
 	public FlexoObject getRepresentableMasterObject(TechnologyObject<JSONTechnologyAdapter> object) {
-		if (object instanceof XXText) {
+		if (object instanceof JSONDocument) {
 			return object;
 		}
 		return null;
@@ -204,8 +204,8 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 
 	@Override
 	public String getWindowTitleforObject(TechnologyObject<JSONTechnologyAdapter> object, FlexoController controller) {
-		if (object instanceof XXText) {
-			return ((XXText) object).getResource().getName();
+		if (object instanceof JSONDocument) {
+			return ((JSONDocument) object).getResource().getName();
 		}
 		return object.toString();
 	}
@@ -213,8 +213,8 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 	@Override
 	public ModuleView<?> createModuleViewForMasterObject(TechnologyObject<JSONTechnologyAdapter> object, FlexoController controller,
 			FlexoPerspective perspective) {
-		if (object instanceof XXText) {
-			XXTextView returned = new XXTextView((XXText) object, controller, perspective);
+		if (object instanceof JSONDocument) {
+			XXTextView returned = new XXTextView((JSONDocument) object, controller, perspective);
 			return returned;
 		}
 		return new EmptyPanel<>(controller, perspective, object);

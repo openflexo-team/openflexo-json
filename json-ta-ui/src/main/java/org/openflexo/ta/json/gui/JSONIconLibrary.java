@@ -44,9 +44,9 @@ import javax.swing.ImageIcon;
 
 import org.openflexo.icon.ImageIconResource;
 import org.openflexo.rm.ResourceLocator;
-import org.openflexo.ta.json.model.XXLine;
-import org.openflexo.ta.json.model.XXObject;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONNode;
+import org.openflexo.ta.json.model.JSONObject;
 
 public class JSONIconLibrary {
 
@@ -56,15 +56,16 @@ public class JSONIconLibrary {
 			ResourceLocator.locateResource("Icons/json-ta-32x32.png"));
 
 	public static final ImageIconResource JSON_TA_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/json-ta-16x16.png"));
-	public static final ImageIconResource XX_TEXT_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/XXText.png"));
-	public static final ImageIconResource XX_LINE_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/XXLine.png"));
+	public static final ImageIconResource JSON_DOCUMENT_ICON = new ImageIconResource(
+			ResourceLocator.locateResource("Icons/json-ta-16x16.png"));
+	public static final ImageIconResource JSON_NODE_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/XXLine.png"));
 
-	public static ImageIcon iconForObject(Class<? extends XXObject> objectClass) {
-		if (XXText.class.isAssignableFrom(objectClass)) {
-			return XX_TEXT_ICON;
+	public static ImageIcon iconForObject(Class<? extends JSONObject> objectClass) {
+		if (JSONDocument.class.isAssignableFrom(objectClass)) {
+			return JSON_DOCUMENT_ICON;
 		}
-		else if (XXLine.class.isAssignableFrom(objectClass)) {
-			return XX_LINE_ICON;
+		else if (JSONNode.class.isAssignableFrom(objectClass)) {
+			return JSON_NODE_ICON;
 		}
 		logger.warning("No icon for " + objectClass);
 		return null;

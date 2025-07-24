@@ -49,6 +49,8 @@ import org.openflexo.pamela.factory.EditingContext;
 import org.openflexo.pamela.factory.PamelaModelFactory;
 import org.openflexo.ta.json.rm.JSONResource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * A {@link PamelaModelFactory} used to manage a XXText<br>
  * One instance of this class should be used for each {@link JSONResource}
@@ -56,17 +58,17 @@ import org.openflexo.ta.json.rm.JSONResource;
  * @author sylvain
  * 
  */
-public class XXModelFactory extends PamelaModelFactory implements PamelaResourceModelFactory<JSONResource> {
+public class JSONModelFactory extends PamelaModelFactory implements PamelaResourceModelFactory<JSONResource> {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(XXModelFactory.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(JSONModelFactory.class.getPackage().getName());
 
 	private final JSONResource resource;
 	private IgnoreLoadingEdits ignoreHandler = null;
 	private FlexoUndoManager undoManager = null;
 
-	public XXModelFactory(JSONResource resource, EditingContext editingContext) throws ModelDefinitionException {
-		super(PamelaMetaModelLibrary.retrieveMetaModel(XXText.class));
+	public JSONModelFactory(JSONResource resource, EditingContext editingContext) throws ModelDefinitionException {
+		super(PamelaMetaModelLibrary.retrieveMetaModel(JSONDocument.class));
 		this.resource = resource;
 		setEditingContext(editingContext);
 	}
@@ -76,14 +78,20 @@ public class XXModelFactory extends PamelaModelFactory implements PamelaResource
 		return resource;
 	}
 
-	public XXText makeXXText() {
-		return newInstance(XXText.class);
+	public JSONDocument makeJSONDocument() {
+		return newInstance(JSONDocument.class);
 	}
 
-	public XXLine makeXXLine(String value, int index) {
-		XXLine returned = newInstance(XXLine.class);
-		returned.setValue(value);
-		returned.setIndex(index);
+	public JSONNode makeJSONNode(JsonNode node, JSONObject parent, boolean recursive) {
+		JSONNode returned = newInstance(JSONNode.class);
+		returned.setNode(node);
+		returned.setJSONDocument(parent.getJSONDocument());
+		System.out.println("Read " + node);
+		if (recursive) {
+			for (JsonNode child : node) {
+				returned.addToChildren(makeJSONNode(child, returned, true));
+			}
+		}
 		return returned;
 	}
 

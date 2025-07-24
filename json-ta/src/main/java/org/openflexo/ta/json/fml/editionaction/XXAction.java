@@ -41,7 +41,7 @@ package org.openflexo.ta.json.fml.editionaction;
 import org.openflexo.foundation.fml.editionaction.TechnologySpecificActionDefiningReceiver;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.ta.json.JSONModelSlot;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
 
 /**
  * Abstract action for {@link JSONModelSlot}
@@ -53,6 +53,6 @@ import org.openflexo.ta.json.model.XXText;
  */
 
 @ModelEntity(isAbstract = true)
-public interface XXAction<T extends Object> extends TechnologySpecificActionDefiningReceiver<JSONModelSlot, XXText, T> {
+public interface XXAction<T extends Object> extends TechnologySpecificActionDefiningReceiver<JSONModelSlot, JSONDocument, T> {
 
 }

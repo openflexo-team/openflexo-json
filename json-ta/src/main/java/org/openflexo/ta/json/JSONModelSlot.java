@@ -52,12 +52,12 @@ import org.openflexo.foundation.technologyadapter.ModelSlot;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
-import org.openflexo.ta.json.fml.XXLineActorReference;
-import org.openflexo.ta.json.fml.XXLineRole;
+import org.openflexo.ta.json.fml.JSONNodeActorReference;
+import org.openflexo.ta.json.fml.JSONNodeRole;
 import org.openflexo.ta.json.fml.editionaction.AddXXLine;
 import org.openflexo.ta.json.fml.editionaction.SelectUniqueXXLine;
 import org.openflexo.ta.json.fml.editionaction.SelectXXLine;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.rm.JSONResource;
 
 /**
@@ -66,17 +66,17 @@ import org.openflexo.ta.json.rm.JSONResource;
  * @author sylvain
  * 
  */
-@DeclareFlexoRoles({ XXLineRole.class })
+@DeclareFlexoRoles({ JSONNodeRole.class })
 @DeclareEditionActions({ AddXXLine.class })
 @DeclareFetchRequests({ SelectUniqueXXLine.class, SelectXXLine.class })
-@DeclareActorReferences({ XXLineActorReference.class })
+@DeclareActorReferences({ JSONNodeActorReference.class })
 @ModelEntity
-@ImplementationClass(JSONModelSlot.XXModelSlotImpl.class)
+@ImplementationClass(JSONModelSlot.JSONModelSlotImpl.class)
 @XMLElement
-@FML("XXModelSlot")
-public interface JSONModelSlot extends FreeModelSlot<XXText, JSONResource> {
+@FML("JSONModelSlot")
+public interface JSONModelSlot extends FreeModelSlot<JSONDocument, JSONResource> {
 
-	public static abstract class XXModelSlotImpl extends FreeModelSlotImpl<XXText, JSONResource> implements JSONModelSlot {
+	public static abstract class JSONModelSlotImpl extends FreeModelSlotImpl<JSONDocument, JSONResource> implements JSONModelSlot {
 
 		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(JSONModelSlot.class.getPackage().getName());
@@ -87,16 +87,16 @@ public interface JSONModelSlot extends FreeModelSlot<XXText, JSONResource> {
 		}
 
 		@Override
-		public <PR extends FlexoRole<?>> String defaultFlexoRoleName(Class<PR> patternRoleClass) {
-			if (XXLineRole.class.isAssignableFrom(patternRoleClass)) {
-				return "line";
+		public <PR extends FlexoRole<?>> String defaultFlexoRoleName(Class<PR> roleClass) {
+			if (JSONNodeRole.class.isAssignableFrom(roleClass)) {
+				return "node";
 			}
 			return null;
 		}
 
 		@Override
 		public Type getType() {
-			return XXText.class;
+			return JSONDocument.class;
 		}
 
 		@Override

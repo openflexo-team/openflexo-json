@@ -1,4 +1,5 @@
 package org.openflexo.technologyadapter.json.model;
+
 /**
  * 
  * Copyright (c) 2018, Openflexo
@@ -37,7 +38,6 @@ package org.openflexo.technologyadapter.json.model;
  * 
  */
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.FileNotFoundException;
@@ -50,16 +50,16 @@ import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.rm.JSONResource;
 import org.openflexo.ta.json.rm.JSONResourceRepository;
-import org.openflexo.ta.xx.AbstractXXTest;
+import org.openflexo.ta.xx.AbstractJSONTest;
 import org.openflexo.test.OrderedRunner;
 import org.openflexo.test.TestOrder;
 
 @RunWith(OrderedRunner.class)
-public class TestLoadXXDocuments extends AbstractXXTest {
-	protected static final Logger logger = Logger.getLogger(TestLoadXXDocuments.class.getPackage().getName());
+public class TestLoadJSONDocuments extends AbstractJSONTest {
+	protected static final Logger logger = Logger.getLogger(TestLoadJSONDocuments.class.getPackage().getName());
 
 	@Test
 	@TestOrder(1)
@@ -69,17 +69,17 @@ public class TestLoadXXDocuments extends AbstractXXTest {
 
 	@Test
 	@TestOrder(3)
-	public void testXXLoading() {
+	public void testJSONLoading() {
 		JSONTechnologyAdapter technologicalAdapter = serviceManager.getTechnologyAdapterService()
 				.getTechnologyAdapter(JSONTechnologyAdapter.class);
 
 		for (FlexoResourceCenter<?> resourceCenter : serviceManager.getResourceCenterService().getResourceCenters()) {
-			JSONResourceRepository<?> workbookRepository = technologicalAdapter.getXXResourceRepository(resourceCenter);
-			assertNotNull(workbookRepository);
-			Collection<JSONResource> documents = workbookRepository.getAllResources();
-			for (JSONResource docResource : documents) {
+			JSONResourceRepository<?> jsonRepository = technologicalAdapter.getJSONResourceRepository(resourceCenter);
+			assertNotNull(jsonRepository);
+			Collection<JSONResource> documents = jsonRepository.getAllResources();
+			for (JSONResource jsonResource : documents) {
 				try {
-					docResource.loadResourceData();
+					jsonResource.loadResourceData();
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (ResourceLoadingCancelledException e) {
@@ -87,25 +87,25 @@ public class TestLoadXXDocuments extends AbstractXXTest {
 				} catch (FlexoException e) {
 					e.printStackTrace();
 				}
-				assertNotNull(docResource.getLoadedResourceData());
-				System.out.println("URI of document: " + docResource.getURI());
-				System.out.println("ResourceData: " + docResource.getLoadedResourceData());
+				assertNotNull(jsonResource.getLoadedResourceData());
+				System.out.println("URI of document: " + jsonResource.getURI());
+				System.out.println("ResourceData: " + jsonResource.getLoadedResourceData());
 			}
 		}
 	}
 
 	@Test
 	@TestOrder(4)
-	public void testXXContents() {
+	public void testAliceContents() {
 
-		XXText text = getXXText("Test1.txt");
-		System.out.println("Test1.txt:\n" + text);
+		JSONDocument document = getJSONDocument("Alice.json");
+		System.out.println("Alice.json:\n" + document.getContents());
 
-		assertEquals(5, text.getLines().size());
+		/*assertEquals(5, text.getLines().size());
 		assertEquals("This", text.getLines().get(0).getValue());
 		assertEquals("is", text.getLines().get(1).getValue());
 		assertEquals("a", text.getLines().get(2).getValue());
 		assertEquals("test", text.getLines().get(3).getValue());
-		assertEquals("file", text.getLines().get(4).getValue());
+		assertEquals("file", text.getLines().get(4).getValue());*/
 	}
 }

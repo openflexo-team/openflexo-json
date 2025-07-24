@@ -38,104 +38,112 @@
 
 package org.openflexo.ta.json.model;
 
+import java.util.List;
 import java.util.logging.Logger;
 
-import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
+import org.openflexo.pamela.annotations.Adder;
+import org.openflexo.pamela.annotations.CloningStrategy;
+import org.openflexo.pamela.annotations.CloningStrategy.StrategyType;
+import org.openflexo.pamela.annotations.Embedded;
 import org.openflexo.pamela.annotations.Getter;
+import org.openflexo.pamela.annotations.Getter.Cardinality;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
+import org.openflexo.pamela.annotations.PastingPoint;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
+import org.openflexo.pamela.annotations.Remover;
 import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLElement;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
- * Represents a simple line of a {@link XXText}
- * 
- * Note: Purpose of that class is to demonstrate API of a {@link TechnologyAdapter}, thus the semantics is here pretty simple: a
- * {@link XXText} is a plain text file contents, serialized as a {@link String}, and a {@link XXLine} is a line of that file, represented as
- * a String
+ * Represents a JSON node inside a {@link JSONDocument}
  * 
  * @author sylvain
  *
  */
 @ModelEntity
-@ImplementationClass(value = XXLine.XXLineImpl.class)
+@ImplementationClass(value = JSONNode.JSONNodeImpl.class)
 @XMLElement
-public interface XXLine extends XXObject {
+public interface JSONNode extends JSONObject {
 
-	@PropertyIdentifier(type = XXText.class)
-	public static final String XX_TEXT_KEY = "XXText";
-	@PropertyIdentifier(type = String.class)
-	public static final String VALUE_KEY = "value";
-	@PropertyIdentifier(type = Integer.class)
-	public static final String INDEX_KEY = "index";
+	@PropertyIdentifier(type = JSONNode.class, cardinality = Cardinality.LIST)
+	public static final String CHILDREN_KEY = "children";
+	@PropertyIdentifier(type = JSONDocument.class)
+	public static final String DOCUMENT_KEY = "document";
+	@PropertyIdentifier(type = JsonNode.class)
+	public static final String NODE_KEY = "node";
 
 	/**
-	 * Return {@link XXText} where this {@link XXLine} is defined
+	 * Return {@link JSONDocument} where this {@link JSONNode} is defined
 	 * 
 	 * @return
 	 */
-	@Getter(value = XX_TEXT_KEY)
-	public XXText getXXText();
+	@Override
+	@Getter(value = DOCUMENT_KEY)
+	public JSONDocument getJSONDocument();
 
 	/**
-	 * Sets {@link XXText} where this {@link XXLine} is defined
+	 * Sets {@link JSONDocument} where this {@link JSONNode} is defined
 	 * 
 	 * @param text
 	 */
-	@Setter(XX_TEXT_KEY)
-	public void setXXText(XXText text);
+	@Setter(DOCUMENT_KEY)
+	public void setJSONDocument(JSONDocument document);
 
 	/**
-	 * Return value for this {@link XXLine}, as a String representing the line
+	 * Return {@link JsonNode} encoding this node
 	 * 
 	 * @return
 	 */
-	@Getter(value = VALUE_KEY)
-	public String getValue();
+	@Getter(value = NODE_KEY, ignoreType = true)
+	public JsonNode getNode();
 
 	/**
-	 * Sets value for this {@link XXLine}, as a String representing the line
+	 * Sets {@link JsonNode} encoding this node
+	 * 
+	 * @param text
+	 */
+	@Setter(NODE_KEY)
+	public void setNode(JsonNode node);
+
+	/**
+	 * Return all {@link JSONNode} defined in this {@link JSONDocument}
 	 * 
 	 * @return
 	 */
-	@Setter(VALUE_KEY)
-	public void setValue(String aValue);
+	@Getter(value = CHILDREN_KEY, cardinality = Cardinality.LIST)
+	@XMLElement
+	@Embedded
+	@CloningStrategy(StrategyType.CLONE)
+	public List<JSONNode> getChildren();
+
+	@Adder(CHILDREN_KEY)
+	@PastingPoint
+	public void addToChildren(JSONNode aNode);
+
+	@Remover(CHILDREN_KEY)
+	public void removeFromChildren(JSONNode aNode);
 
 	/**
-	 * Return index of line
-	 * 
-	 * @return
-	 */
-	@Getter(value = INDEX_KEY, defaultValue = "-1")
-	public int getIndex();
-
-	/**
-	 * Sets index of line
-	 * 
-	 * @return
-	 */
-	@Setter(INDEX_KEY)
-	public void setIndex(int index);
-
-	/**
-	 * Default base implementation for {@link XXLine}
+	 * Default base implementation for {@link JSONNode}
 	 * 
 	 * @author sylvain
 	 *
 	 */
-	public static abstract class XXLineImpl extends XXObjectImpl implements XXLine {
+	public static abstract class JSONNodeImpl extends XXObjectImpl implements JSONNode {
 
 		@SuppressWarnings("unused")
-		private static final Logger logger = Logger.getLogger(XXLine.class.getPackage().getName());
+		private static final Logger logger = Logger.getLogger(JSONNode.class.getPackage().getName());
 
-		public XXLineImpl() {
+		public JSONNodeImpl() {
 
 		}
 
 		@Override
-		public XXText getResourceData() {
-			return getXXText();
+		public JSONDocument getResourceData() {
+			return getJSONDocument();
 		}
 
 	}

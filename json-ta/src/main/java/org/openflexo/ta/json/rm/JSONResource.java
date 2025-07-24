@@ -43,24 +43,28 @@ import org.openflexo.foundation.technologyadapter.TechnologyAdapterResource;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
-import org.openflexo.ta.json.model.XXModelFactory;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONModelFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * A resource storing a {@link XXText}
+ * A resource storing a {@link JSONDocument}
  * 
  * @author sylvain
  *
  */
 @ModelEntity
 @ImplementationClass(JSONResourceImpl.class)
-public interface JSONResource extends TechnologyAdapterResource<XXText, JSONTechnologyAdapter>, PamelaResource<XXText, XXModelFactory> {
+public interface JSONResource
+		extends TechnologyAdapterResource<JSONDocument, JSONTechnologyAdapter>, PamelaResource<JSONDocument, JSONModelFactory> {
 
 	/**
 	 * Convenient method to retrieve resource data
 	 * 
 	 * @return
 	 */
-	public XXText getXXText();
+	public JSONDocument getJSONDocument();
 
+	public ObjectMapper getObjectMapper();
 }

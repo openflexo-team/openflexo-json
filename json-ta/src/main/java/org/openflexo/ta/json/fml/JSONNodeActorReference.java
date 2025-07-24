@@ -54,21 +54,21 @@ import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.pamela.annotations.XMLElement;
-import org.openflexo.ta.json.model.XXLine;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONNode;
 import org.openflexo.ta.json.rm.JSONResource;
 
 /**
- * Implements {@link ActorReference} for {@link XXLine} object
+ * Implements {@link ActorReference} for {@link JSONNode} object
  * 
  * @author sylvain
  * 
  */
 @ModelEntity
-@ImplementationClass(XXLineActorReference.XXLineActorReferenceImpl.class)
+@ImplementationClass(JSONNodeActorReference.JSONNodeActorReferenceImpl.class)
 @XMLElement
-@FML("XXLineActorReference")
-public interface XXLineActorReference extends ActorReference<XXLine> {
+@FML("JSONNodeActorReference")
+public interface JSONNodeActorReference extends ActorReference<JSONNode> {
 
 	@PropertyIdentifier(type = String.class)
 	public static final String OBJECT_URI_KEY = "objectURI";
@@ -80,17 +80,17 @@ public interface XXLineActorReference extends ActorReference<XXLine> {
 	@Setter(OBJECT_URI_KEY)
 	public void setObjectURI(String objectURI);
 
-	public abstract static class XXLineActorReferenceImpl extends ActorReferenceImpl<XXLine> implements XXLineActorReference {
+	public abstract static class JSONNodeActorReferenceImpl extends ActorReferenceImpl<JSONNode> implements JSONNodeActorReference {
 
-		private static final Logger logger = FlexoLogger.getLogger(XXLineActorReference.class.getPackage().toString());
+		private static final Logger logger = FlexoLogger.getLogger(JSONNodeActorReference.class.getPackage().toString());
 
-		private XXLine object;
+		private JSONNode object;
 		private String objectURI;
 
-		public XXText getXXText() {
-			if (getXXTextResource() != null) {
+		public JSONDocument getJSONDocument() {
+			if (getJSONResource() != null) {
 				try {
-					return getXXTextResource().getResourceData();
+					return getJSONResource().getResourceData();
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (ResourceLoadingCancelledException e) {
@@ -102,7 +102,7 @@ public interface XXLineActorReference extends ActorReference<XXLine> {
 			return null;
 		}
 
-		public JSONResource getXXTextResource() {
+		public JSONResource getJSONResource() {
 			FreeModelSlotInstance<?, ?, ?> msInstance = (FreeModelSlotInstance<?, ?, ?>) getModelSlotInstance();
 			if (msInstance != null && msInstance.getResource() instanceof JSONResource) {
 				return (JSONResource) msInstance.getResource();
@@ -111,11 +111,11 @@ public interface XXLineActorReference extends ActorReference<XXLine> {
 		}
 
 		@Override
-		public XXLine getModellingElement(boolean forceLoading) {
-			if (object == null && objectURI != null) {
+		public JSONNode getModellingElement(boolean forceLoading) {
+			/*if (object == null && objectURI != null) {
 				int index = Integer.parseInt(objectURI);
 				return getXXText().getLines().get(index);
-			}
+			}*/
 			if (object == null) {
 				logger.warning("Could not retrieve object " + objectURI);
 			}
@@ -124,18 +124,18 @@ public interface XXLineActorReference extends ActorReference<XXLine> {
 		}
 
 		@Override
-		public void setModellingElement(XXLine object) {
+		public void setModellingElement(JSONNode object) {
 			this.object = object;
-			if (object != null) {
+			/*if (object != null) {
 				objectURI = "" + object.getIndex();
-			}
+			}*/
 		}
 
 		@Override
 		public String getObjectURI() {
-			if (object != null) {
+			/*if (object != null) {
 				return "" + object.getIndex();
-			}
+			}*/
 			return objectURI;
 		}
 

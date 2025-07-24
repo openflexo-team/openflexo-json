@@ -36,63 +36,55 @@
  * 
  */
 
-package org.openflexo.ta.json.fml;
+package org.openflexo.ta.json.model;
 
-import java.lang.reflect.Type;
+import java.util.logging.Logger;
 
-import org.openflexo.foundation.fml.FlexoRole;
-import org.openflexo.foundation.fml.annotations.FML;
-import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
-import org.openflexo.foundation.fml.rt.ActorReference;
-import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
-import org.openflexo.pamela.annotations.ImplementationClass;
+import org.openflexo.foundation.InnerResourceData;
+import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
-import org.openflexo.ta.json.model.XXLine;
 
 /**
- * A role which allow to reference a line in a plain text file
+ * Common API for all objects involved in XX model
  * 
  * @author sylvain
  *
  */
-@ModelEntity
-@ImplementationClass(XXLineRole.XXLineRoleImpl.class)
-@XMLElement
-@FML("XXLineRole")
-public interface XXLineRole extends FlexoRole<XXLine> {
+@ModelEntity(isAbstract = true)
+public interface JSONObject extends InnerResourceData<JSONDocument>, TechnologyObject<JSONTechnologyAdapter> {
 
-	public static abstract class XXLineRoleImpl extends FlexoRoleImpl<XXLine> implements XXLineRole {
+	public JSONModelFactory getFactory();
+
+	/**
+	 * Return {@link JSONDocument} where this {@link JSONObject} is defined
+	 * 
+	 * @return
+	 */
+	public JSONDocument getJSONDocument();
+
+	/**
+	 * Default base implementation for {@link JSONObject}
+	 * 
+	 * @author sylvain
+	 *
+	 */
+	public static abstract class XXObjectImpl extends FlexoObjectImpl implements JSONObject {
+
+		@SuppressWarnings("unused")
+		private static final Logger logger = Logger.getLogger(XXObjectImpl.class.getPackage().getName());
 
 		@Override
-		public Type getType() {
-			return XXLine.class;
+		public JSONTechnologyAdapter getTechnologyAdapter() {
+			if (getResourceData() != null && getResourceData().getResource() != null) {
+				return getResourceData().getResource().getTechnologyAdapter();
+			}
+			return null;
 		}
 
 		@Override
-		public RoleCloningStrategy defaultCloningStrategy() {
-			return RoleCloningStrategy.Reference;
-		}
-
-		@Override
-		public boolean defaultBehaviourIsToBeDeleted() {
-			return false;
-		}
-
-		@Override
-		public ActorReference<XXLine> makeActorReference(XXLine object, FlexoConceptInstance fci) {
-			AbstractVirtualModelInstanceModelFactory<?> factory = fci.getFactory();
-			XXLineActorReference returned = factory.newInstance(XXLineActorReference.class);
-			returned.setFlexoRole(this);
-			returned.setFlexoConceptInstance(fci);
-			returned.setModellingElement(object);
-			return returned;
-		}
-
-		@Override
-		public Class<JSONTechnologyAdapter> getRoleTechnologyAdapterClass() {
-			return JSONTechnologyAdapter.class;
+		public JSONModelFactory getFactory() {
+			return getResourceData().getResource().getFactory();
 		}
 
 	}

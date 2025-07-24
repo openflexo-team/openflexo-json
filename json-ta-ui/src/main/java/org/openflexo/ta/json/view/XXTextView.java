@@ -49,7 +49,7 @@ import javax.swing.JTextArea;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.selection.SelectionListener;
 import org.openflexo.selection.SelectionManager;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.view.SelectionSynchronizedModuleView;
 import org.openflexo.view.controller.FlexoController;
 import org.openflexo.view.controller.model.FlexoPerspective;
@@ -61,15 +61,15 @@ import org.openflexo.view.controller.model.FlexoPerspective;
  * 
  */
 @SuppressWarnings("serial")
-public class XXTextView extends JPanel implements SelectionSynchronizedModuleView<XXText> {
+public class XXTextView extends JPanel implements SelectionSynchronizedModuleView<JSONDocument> {
 
-	private final XXText text;
+	private final JSONDocument text;
 	private final FlexoPerspective declaredPerspective;
 
 	private final FlexoController controller;
 	private JTextArea textArea;
 
-	public XXTextView(XXText text, FlexoController controller, FlexoPerspective perspective) {
+	public XXTextView(JSONDocument text, FlexoController controller, FlexoPerspective perspective) {
 		super(new BorderLayout());
 		this.controller = controller;
 		declaredPerspective = perspective;
@@ -115,7 +115,7 @@ public class XXTextView extends JPanel implements SelectionSynchronizedModuleVie
 	}
 
 	@Override
-	public XXText getRepresentedObject() {
+	public JSONDocument getRepresentedObject() {
 		return text;
 	}
 

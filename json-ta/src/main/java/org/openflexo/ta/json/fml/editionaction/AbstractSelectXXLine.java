@@ -48,11 +48,11 @@ import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.ta.json.JSONModelSlot;
-import org.openflexo.ta.json.model.XXLine;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONNode;
 
 /**
- * Generic {@link AbstractFetchRequest} allowing to retrieve a selection of some {@link XXLine} matching some conditions
+ * Generic {@link AbstractFetchRequest} allowing to retrieve a selection of some {@link JSONNode} matching some conditions
  * 
  * @author sylvain
  *
@@ -60,9 +60,9 @@ import org.openflexo.ta.json.model.XXText;
  */
 @ModelEntity(isAbstract = true)
 @ImplementationClass(AbstractSelectXXLine.AbstractSelectXXLineImpl.class)
-public interface AbstractSelectXXLine<AT> extends AbstractFetchRequest<JSONModelSlot, XXText, XXLine, AT> {
+public interface AbstractSelectXXLine<AT> extends AbstractFetchRequest<JSONModelSlot, JSONDocument, JSONNode, AT> {
 
-	public static abstract class AbstractSelectXXLineImpl<AT> extends AbstractFetchRequestImpl<JSONModelSlot, XXText, XXLine, AT>
+	public static abstract class AbstractSelectXXLineImpl<AT> extends AbstractFetchRequestImpl<JSONModelSlot, JSONDocument, JSONNode, AT>
 			implements AbstractSelectXXLine<AT> {
 
 		@SuppressWarnings("unused")
@@ -70,20 +70,20 @@ public interface AbstractSelectXXLine<AT> extends AbstractFetchRequest<JSONModel
 
 		@Override
 		public Type getFetchedType() {
-			return XXLine.class;
+			return JSONNode.class;
 		}
 
 		@Override
-		public List<XXLine> performExecute(RunTimeEvaluationContext evaluationContext) {
+		public List<JSONNode> performExecute(RunTimeEvaluationContext evaluationContext) {
 
-			List<XXLine> selectedLines = new ArrayList<>();
-			XXText resourceData = getReceiver(evaluationContext);
+			List<JSONNode> selectedLines = new ArrayList<>();
+			JSONDocument resourceData = getReceiver(evaluationContext);
 
-			if (resourceData != null) {
+			/*if (resourceData != null) {
 				selectedLines.addAll(resourceData.getLines());
-			}
+			}*/
 
-			List<XXLine> returned = filterWithConditions(selectedLines, evaluationContext);
+			List<JSONNode> returned = filterWithConditions(selectedLines, evaluationContext);
 
 			return returned;
 

@@ -44,7 +44,7 @@ import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.pamela.factory.PamelaModelFactory;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
 
 /**
  * XX resource repository<br>
@@ -55,7 +55,7 @@ import org.openflexo.ta.json.model.XXText;
  * 
  */
 @ModelEntity
-public interface JSONResourceRepository<I> extends TechnologyAdapterResourceRepository<JSONResource, JSONTechnologyAdapter, XXText, I> {
+public interface JSONResourceRepository<I> extends TechnologyAdapterResourceRepository<JSONResource, JSONTechnologyAdapter, JSONDocument, I> {
 
 	public static <I> JSONResourceRepository<I> instanciateNewRepository(JSONTechnologyAdapter technologyAdapter,
 			FlexoResourceCenter<I> resourceCenter) {

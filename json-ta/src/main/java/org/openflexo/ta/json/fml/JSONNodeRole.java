@@ -36,48 +36,63 @@
  * 
  */
 
-package org.openflexo.ta.json.model;
+package org.openflexo.ta.json.fml;
 
-import java.util.logging.Logger;
+import java.lang.reflect.Type;
 
-import org.openflexo.foundation.InnerResourceData;
-import org.openflexo.foundation.technologyadapter.TechnologyObject;
+import org.openflexo.foundation.fml.FlexoRole;
+import org.openflexo.foundation.fml.annotations.FML;
+import org.openflexo.foundation.fml.rt.AbstractVirtualModelInstanceModelFactory;
+import org.openflexo.foundation.fml.rt.ActorReference;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
+import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
+import org.openflexo.ta.json.model.JSONNode;
 
 /**
- * Common API for all objects involved in XX model
+ * A role which allow to reference a JSON node in a JSON document
  * 
  * @author sylvain
  *
  */
-@ModelEntity(isAbstract = true)
-public interface XXObject extends InnerResourceData<XXText>, TechnologyObject<JSONTechnologyAdapter> {
+@ModelEntity
+@ImplementationClass(JSONNodeRole.JSONNodeRoleImpl.class)
+@XMLElement
+@FML("XXLineRole")
+public interface JSONNodeRole extends FlexoRole<JSONNode> {
 
-	public XXModelFactory getFactory();
-
-	/**
-	 * Default base implementation for {@link XXObject}
-	 * 
-	 * @author sylvain
-	 *
-	 */
-	public static abstract class XXObjectImpl extends FlexoObjectImpl implements XXObject {
-
-		@SuppressWarnings("unused")
-		private static final Logger logger = Logger.getLogger(XXObjectImpl.class.getPackage().getName());
+	public static abstract class JSONNodeRoleImpl extends FlexoRoleImpl<JSONNode> implements JSONNodeRole {
 
 		@Override
-		public JSONTechnologyAdapter getTechnologyAdapter() {
-			if (getResourceData() != null && getResourceData().getResource() != null) {
-				return getResourceData().getResource().getTechnologyAdapter();
-			}
-			return null;
+		public Type getType() {
+			return JSONNode.class;
 		}
 
 		@Override
-		public XXModelFactory getFactory() {
-			return getResourceData().getResource().getFactory();
+		public RoleCloningStrategy defaultCloningStrategy() {
+			return RoleCloningStrategy.Reference;
+		}
+
+		@Override
+		public boolean defaultBehaviourIsToBeDeleted() {
+			return false;
+		}
+
+		@Override
+		public ActorReference<JSONNode> makeActorReference(JSONNode object, FlexoConceptInstance fci) {
+			AbstractVirtualModelInstanceModelFactory<?> factory = fci.getFactory();
+			JSONNodeActorReference returned = factory.newInstance(JSONNodeActorReference.class);
+			returned.setFlexoRole(this);
+			returned.setFlexoConceptInstance(fci);
+			returned.setModellingElement(object);
+			return returned;
+		}
+
+		@Override
+		public Class<JSONTechnologyAdapter> getRoleTechnologyAdapterClass() {
+			return JSONTechnologyAdapter.class;
 		}
 
 	}

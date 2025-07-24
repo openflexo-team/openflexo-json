@@ -46,8 +46,8 @@ import org.openflexo.foundation.resource.TechnologySpecificPamelaResourceFactory
 import org.openflexo.foundation.technologyadapter.TechnologyContextManager;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
-import org.openflexo.ta.json.model.XXModelFactory;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONModelFactory;
+import org.openflexo.ta.json.model.JSONDocument;
 
 /**
  * Implementation of {@link FlexoResourceFactory} for {@link JSONResource}
@@ -56,7 +56,7 @@ import org.openflexo.ta.json.model.XXText;
  *
  */
 public class JSONResourceFactory
-		extends TechnologySpecificPamelaResourceFactory<JSONResource, XXText, JSONTechnologyAdapter, XXModelFactory> {
+		extends TechnologySpecificPamelaResourceFactory<JSONResource, JSONDocument, JSONTechnologyAdapter, JSONModelFactory> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(JSONResourceFactory.class.getPackage().getName());
@@ -68,8 +68,8 @@ public class JSONResourceFactory
 	}
 
 	@Override
-	public XXText makeEmptyResourceData(JSONResource resource) {
-		return resource.getFactory().makeXXText();
+	public JSONDocument makeEmptyResourceData(JSONResource resource) {
+		return resource.getFactory().makeJSONDocument();
 	}
 
 	@Override
@@ -84,15 +84,15 @@ public class JSONResourceFactory
 
 		// Register the resource in the repository of supplied resource center
 		registerResourceInResourceRepository(resource,
-				getTechnologyAdapter(resourceCenter.getServiceManager()).getXXResourceRepository(resourceCenter));
+				getTechnologyAdapter(resourceCenter.getServiceManager()).getJSONResourceRepository(resourceCenter));
 
 		return resource;
 	}
 
 	@Override
-	public XXModelFactory makeModelFactory(JSONResource resource, TechnologyContextManager<JSONTechnologyAdapter> technologyContextManager)
+	public JSONModelFactory makeModelFactory(JSONResource resource, TechnologyContextManager<JSONTechnologyAdapter> technologyContextManager)
 			throws ModelDefinitionException {
-		return new XXModelFactory(resource, technologyContextManager.getServiceManager().getEditingContext());
+		return new JSONModelFactory(resource, technologyContextManager.getServiceManager().getEditingContext());
 	}
 
 }

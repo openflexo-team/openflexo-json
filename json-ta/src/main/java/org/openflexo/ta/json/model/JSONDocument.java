@@ -38,76 +38,65 @@
 
 package org.openflexo.ta.json.model;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.openflexo.foundation.resource.ResourceData;
-import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
-import org.openflexo.pamela.annotations.Adder;
 import org.openflexo.pamela.annotations.CloningStrategy;
 import org.openflexo.pamela.annotations.CloningStrategy.StrategyType;
 import org.openflexo.pamela.annotations.Embedded;
 import org.openflexo.pamela.annotations.Getter;
-import org.openflexo.pamela.annotations.Getter.Cardinality;
-import org.openflexo.ta.json.rm.JSONResource;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.PastingPoint;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
-import org.openflexo.pamela.annotations.Remover;
-import org.openflexo.pamela.annotations.XMLElement;
+import org.openflexo.pamela.annotations.Setter;
+import org.openflexo.ta.json.rm.JSONResource;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
- * Represents the {@link ResourceData} deserialized from a {@link JSONResource}<br>
- * 
- * Note: Purpose of that class is to demonstrate API of a {@link TechnologyAdapter}, thus the semantics is here pretty simple: a
- * {@link XXText} is a plain text file contents, serialized as a {@link String}
+ * Represents a JSON document<br>
+ * This is the {@link ResourceData} deserialized from a {@link JSONResource}<br>
  * 
  * @author sylvain
  *
  */
 @ModelEntity
-@ImplementationClass(value = XXText.XXTextImpl.class)
-public interface XXText extends XXObject, ResourceData<XXText> {
+@ImplementationClass(value = JSONDocument.JSONDocumentImpl.class)
+public interface JSONDocument extends JSONObject, ResourceData<JSONDocument> {
 
-	@PropertyIdentifier(type = XXLine.class, cardinality = Cardinality.LIST)
-	public static final String LINES_KEY = "lines";
+	@PropertyIdentifier(type = JSONNode.class)
+	public static final String ROOT_NODE_KEY = "rootNode";
 
 	/**
-	 * Return contents of text file
+	 * Return contents as text
 	 * 
 	 * @return
 	 */
 	public String getContents();
 
 	/**
-	 * Return all {@link XXLine} defined in this {@link XXText}
+	 * Return all {@link JSONNode} defined in this {@link JSONDocument}
 	 * 
 	 * @return
 	 */
-	@Getter(value = LINES_KEY, cardinality = Cardinality.LIST, inverse = XXLine.XX_TEXT_KEY)
-	@XMLElement
+	@Getter(value = ROOT_NODE_KEY)
 	@Embedded
 	@CloningStrategy(StrategyType.CLONE)
-	public List<XXLine> getLines();
+	public JSONNode getRootNode();
 
-	@Adder(LINES_KEY)
-	@PastingPoint
-	public void addToLines(XXLine aLine);
-
-	@Remover(LINES_KEY)
-	public void removeFromLines(XXLine aLine);
+	@Setter(ROOT_NODE_KEY)
+	public void setRootNode(JSONNode rootNode);
 
 	@Override
 	public JSONResource getResource();
 
 	/**
-	 * Default base implementation for {@link XXText}
+	 * Default base implementation for {@link JSONDocument}
 	 * 
 	 * @author sylvain
 	 *
 	 */
-	public static abstract class XXTextImpl extends XXObjectImpl implements XXText {
+	public static abstract class JSONDocumentImpl extends XXObjectImpl implements JSONDocument {
 
 		@SuppressWarnings("unused")
 		private static final Logger logger = Logger.getLogger(XXObjectImpl.class.getPackage().getName());
@@ -117,7 +106,12 @@ public interface XXText extends XXObject, ResourceData<XXText> {
 		private String contents = null;
 
 		@Override
-		public XXText getResourceData() {
+		public JSONDocument getResourceData() {
+			return this;
+		}
+
+		@Override
+		public JSONDocument getJSONDocument() {
 			return this;
 		}
 
@@ -133,12 +127,21 @@ public interface XXText extends XXObject, ResourceData<XXText> {
 
 		@Override
 		public String getContents() {
-			if (contents == null) {
+			// TODO : implements a pretty print ?
+			/*if (contents == null) {
 				StringBuffer sb = new StringBuffer();
-				for (XXLine xxLine : getLines()) {
+				for (JSONNode xxLine : getLines()) {
 					sb.append(xxLine.getValue() + "\n");
 				}
 				contents = sb.toString();
+			}*/
+			if (contents == null) {
+				try {
+					contents = getResource().getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(getRootNode().getNode());
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			return contents;
 		}
@@ -147,17 +150,17 @@ public interface XXText extends XXObject, ResourceData<XXText> {
 			contents = null;
 		}
 
-		@Override
-		public void addToLines(XXLine aLine) {
+		/*@Override
+		public void addToLines(JSONNode aLine) {
 			performSuperAdder(LINES_KEY, aLine);
 			clearContents();
 		}
-
+		
 		@Override
-		public void removeFromLines(XXLine aLine) {
+		public void removeFromLines(JSONNode aLine) {
 			performSuperRemover(LINES_KEY, aLine);
 			clearContents();
-		}
+		}*/
 
 	}
 

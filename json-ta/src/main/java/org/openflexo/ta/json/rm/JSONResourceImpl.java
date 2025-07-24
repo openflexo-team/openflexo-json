@@ -38,15 +38,11 @@
 
 package org.openflexo.ta.json.rm;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,21 +55,21 @@ import org.openflexo.foundation.resource.ResourceData;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.foundation.resource.StreamIODelegate;
-import org.openflexo.ta.json.model.XXLine;
-import org.openflexo.ta.json.model.XXModelFactory;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONModelFactory;
+import org.openflexo.ta.json.model.JSONNode;
 import org.openflexo.toolbox.FileUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Default implementation for a resource storing a {@link XXText}
+ * Default implementation for a resource storing a {@link JSONDocument}
  * 
  * @author sylvain
  *
  */
-public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXModelFactory> implements JSONResource {
+public abstract class JSONResourceImpl extends PamelaResourceImpl<JSONDocument, JSONModelFactory> implements JSONResource {
 
 	private static final Logger logger = Logger.getLogger(JSONResourceImpl.class.getPackage().getName());
 
@@ -83,7 +79,7 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXMode
 	 * @return
 	 */
 	@Override
-	public XXText getXXText() {
+	public JSONDocument getJSONDocument() {
 		try {
 			return getResourceData();
 		} catch (ResourceLoadingCancelledException e) {
@@ -99,14 +95,14 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXMode
 	}
 
 	@Override
-	protected XXText performLoad() throws IOException, Exception {
+	protected JSONDocument performLoad() throws IOException, Exception {
 		if (getFlexoIOStreamDelegate() == null) {
 			throw new IOFlexoException("Cannot load document with this IO/delegate: " + getIODelegate());
 		}
 
 		notifyResourceWillLoad();
 
-		XXText returned = null;
+		JSONDocument returned = null;
 		try {
 			returned = load(getFlexoIOStreamDelegate());
 			getInputStream().close();
@@ -128,8 +124,8 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXMode
 	 * Return type of {@link ResourceData}
 	 */
 	@Override
-	public Class<XXText> getResourceDataClass() {
-		return XXText.class;
+	public Class<JSONDocument> getResourceDataClass() {
+		return JSONDocument.class;
 	}
 
 	/**
@@ -188,6 +184,16 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXMode
 		}
 	}
 
+	ObjectMapper mapper = null;
+
+	@Override
+	public ObjectMapper getObjectMapper() {
+		if (mapper == null) {
+			mapper = new ObjectMapper();
+		}
+		return mapper;
+	}
+
 	/**
 	 * {@link ResourceData} internal loading implementation<br>
 	 * (trivial here)
@@ -196,22 +202,52 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXMode
 	 * @return
 	 * @throws IOException
 	 */
-	private <I> XXText load(StreamIODelegate<I> ioDelegate) throws IOException {
+	private <I> JSONDocument load(StreamIODelegate<I> ioDelegate) throws IOException {
 
-		XXText returned = getFactory().makeXXText();
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(ioDelegate.getInputStream()))) {
+		JSONDocument returned = getFactory().makeJSONDocument();
+
+		JsonNode root = getObjectMapper().readTree(ioDelegate.getInputStream());
+		JSONNode rootNode = getFactory().makeJSONNode(root, returned, true);
+		returned.setRootNode(rootNode);
+
+		/*ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			JsonNode root = mapper.readTree(f);
+		
+			String nom = root.get("nom").asText();
+			int age = root.get("age").asInt();
+		
+			JsonNode adresse = root.get("adresse");
+			String ville = adresse.get("ville").asText();
+		
+			JsonNode hobbies = root.get("hobbies");
+			for (JsonNode hobby : hobbies) {
+				System.out.println("Hobby: " + hobby.asText());
+			}
+		
+			System.out.println("Nom: " + nom);
+			System.out.println("Ville: " + ville);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}*/
+
+		/*try (BufferedReader br = new BufferedReader(new InputStreamReader(ioDelegate.getInputStream()))) {
 			int index = 0;
 			String nextLine = null;
 			do {
 				nextLine = br.readLine();
 				if (nextLine != null) {
 					System.out.println("Ligne lue : " + nextLine);
-					XXLine newLine = getFactory().makeXXLine(nextLine, index);
+					JSONNode newLine = getFactory().makeXXLine(nextLine, index);
 					returned.addToLines(newLine);
 					index++;
 				}
 			} while (nextLine != null);
 		}
+		return returned;*/
+
 		return returned;
 	}
 
@@ -222,9 +258,9 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXMode
 	 * @throws IOException
 	 */
 	private void write(OutputStream out) throws SaveResourceException {
-		logger.info("Writing " + getIODelegate().getSerializationArtefact());
+		/*logger.info("Writing " + getIODelegate().getSerializationArtefact());
 		try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out))) {
-			for (XXLine line : getXXText().getLines()) {
+			for (JSONNode line : getXXText().getLines()) {
 				bw.write(line.getValue());
 				bw.newLine();
 			}
@@ -238,7 +274,8 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXMode
 			} catch (IOException e) {
 			}
 		}
-		logger.info("Wrote " + getIODelegate().getSerializationArtefact());
+		logger.info("Wrote " + getIODelegate().getSerializationArtefact());*/
+		logger.warning("Not implemented yet");
 	}
 
 	public static void main(String[] args) {
@@ -262,6 +299,9 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<XXText, XXMode
 
 			System.out.println("Nom: " + nom);
 			System.out.println("Ville: " + ville);
+
+			String jsonPretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
+			System.out.println("PP: " + jsonPretty);
 
 		} catch (Exception e) {
 			e.printStackTrace();

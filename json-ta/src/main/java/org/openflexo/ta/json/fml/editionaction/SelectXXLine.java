@@ -46,11 +46,11 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONModelSlot;
-import org.openflexo.ta.json.model.XXLine;
-import org.openflexo.ta.json.model.XXText;
+import org.openflexo.ta.json.model.JSONNode;
+import org.openflexo.ta.json.model.JSONDocument;
 
 /**
- * A {@link FetchRequest} allowing to retrieve a selection of some {@link XXLine} matching some conditions
+ * A {@link FetchRequest} allowing to retrieve a selection of some {@link JSONNode} matching some conditions
  * 
  * @author sylvain
  * 
@@ -59,6 +59,6 @@ import org.openflexo.ta.json.model.XXText;
 @ImplementationClass(SelectXXLine.AbstractSelectXXLineImpl.class)
 @XMLElement
 @FML("SelectXXLine")
-public interface SelectXXLine extends AbstractSelectXXLine<List<XXLine>>, FetchRequest<JSONModelSlot, XXText, XXLine> {
+public interface SelectXXLine extends AbstractSelectXXLine<List<JSONNode>>, FetchRequest<JSONModelSlot, JSONDocument, JSONNode> {
 
 }
