@@ -41,6 +41,7 @@ package org.openflexo.ta.json.model;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.openflexo.pamela.annotations.Adder;
 import org.openflexo.pamela.annotations.CloningStrategy;
 import org.openflexo.pamela.annotations.CloningStrategy.StrategyType;
@@ -126,16 +127,22 @@ public interface JSONNode extends JSONObject {
 	@Remover(CHILDREN_KEY)
 	public void removeFromChildren(JSONNode aNode);
 
+    public String getContent();
+
+    public JSONNode getNodeWithKey(String key);
+
+    public void setNodeValue(String key, String value);
+
 	/**
 	 * Default base implementation for {@link JSONNode}
 	 * 
 	 * @author sylvain
 	 *
 	 */
-	public static abstract class JSONNodeImpl extends XXObjectImpl implements JSONNode {
+    public static abstract class JSONNodeImpl extends JSONObjectImpl implements JSONNode {
 
-		@SuppressWarnings("unused")
-		private static final Logger logger = Logger.getLogger(JSONNode.class.getPackage().getName());
+        @SuppressWarnings("unused")
+        private static final Logger logger = Logger.getLogger(JSONNode.class.getPackage().getName());
 
 		public JSONNodeImpl() {
 
@@ -146,5 +153,41 @@ public interface JSONNode extends JSONObject {
 			return getJSONDocument();
 		}
 
+        @Override
+        public JSONNode getNodeWithKey(String key) {
+            if (key == null || key.isEmpty()) return null;
+
+            JsonNode current = getNode();
+            if (current != null && current.has(key)) {
+                JSONNode valueNode = getFactory().newInstance(JSONNode.class);
+                valueNode.setJSONDocument(getJSONDocument());
+                valueNode.setNode(current.get(key));
+                return valueNode;
+            }
+
+            for (JSONNode child : getChildren()) {
+                JSONNode found = child.getNodeWithKey(key);
+                if (found != null) {
+                    return found;
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        public String getContent() {
+            return getNode().toString();
+        }
+
+        @Override
+        public void setNodeValue(String key, String value) {
+            JsonNode node = getNode();
+            ObjectNode objectNode = (ObjectNode) node;
+            objectNode.put(key, value);
+        }
+
 	}
+
+
 }

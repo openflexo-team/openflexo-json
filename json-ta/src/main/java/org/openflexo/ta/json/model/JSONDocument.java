@@ -96,10 +96,10 @@ public interface JSONDocument extends JSONObject, ResourceData<JSONDocument> {
 	 * @author sylvain
 	 *
 	 */
-	public static abstract class JSONDocumentImpl extends XXObjectImpl implements JSONDocument {
+    public static abstract class JSONDocumentImpl extends JSONObjectImpl implements JSONDocument {
 
-		@SuppressWarnings("unused")
-		private static final Logger logger = Logger.getLogger(XXObjectImpl.class.getPackage().getName());
+        @SuppressWarnings("unused")
+        private static final Logger logger = Logger.getLogger(JSONObjectImpl.class.getPackage().getName());
 
 		public static final String ALL_KEY = "All";
 

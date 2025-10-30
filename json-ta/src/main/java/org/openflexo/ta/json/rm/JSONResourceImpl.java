@@ -258,24 +258,25 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<JSONDocument, 
 	 * @throws IOException
 	 */
 	private void write(OutputStream out) throws SaveResourceException {
-		/*logger.info("Writing " + getIODelegate().getSerializationArtefact());
-		try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out))) {
-			for (JSONNode line : getXXText().getLines()) {
-				bw.write(line.getValue());
-				bw.newLine();
-			}
-			bw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new SaveResourceException(getIODelegate());
-		} finally {
-			try {
-				out.close();
-			} catch (IOException e) {
-			}
-		}
-		logger.info("Wrote " + getIODelegate().getSerializationArtefact());*/
-		logger.warning("Not implemented yet");
+        logger.info("Writing " + getIODelegate().getSerializationArtefact());
+        try {
+            ObjectMapper mapper = getObjectMapper();
+
+            JsonNode jsonNode = getJSONDocument().getRootNode().getNode();
+
+            mapper.writerWithDefaultPrettyPrinter().writeValue(out, jsonNode);
+
+            logger.info("Wrote " + getIODelegate().getSerializationArtefact());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new SaveResourceException(getIODelegate());
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                ;
+            }
+        }
 	}
 
 	public static void main(String[] args) {

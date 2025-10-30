@@ -55,6 +55,7 @@ import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.fml.JSONNodeActorReference;
 import org.openflexo.ta.json.fml.JSONNodeRole;
 import org.openflexo.ta.json.fml.editionaction.AddXXLine;
+import org.openflexo.ta.json.fml.editionaction.SelectNode;
 import org.openflexo.ta.json.fml.editionaction.SelectUniqueXXLine;
 import org.openflexo.ta.json.fml.editionaction.SelectXXLine;
 import org.openflexo.ta.json.model.JSONDocument;
@@ -68,7 +69,7 @@ import org.openflexo.ta.json.rm.JSONResource;
  */
 @DeclareFlexoRoles({ JSONNodeRole.class })
 @DeclareEditionActions({ AddXXLine.class })
-@DeclareFetchRequests({ SelectUniqueXXLine.class, SelectXXLine.class })
+@DeclareFetchRequests({ SelectNode.class })
 @DeclareActorReferences({ JSONNodeActorReference.class })
 @ModelEntity
 @ImplementationClass(JSONModelSlot.JSONModelSlotImpl.class)
