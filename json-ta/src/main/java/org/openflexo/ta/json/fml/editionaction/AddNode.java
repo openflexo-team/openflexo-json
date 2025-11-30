@@ -10,6 +10,7 @@ import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
+import org.openflexo.foundation.fml.annotations.FMLAttribute;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.validation.BindingIsRequiredAndMustBeValid;
 import org.openflexo.foundation.ontology.DuplicateURIException;
@@ -43,6 +44,8 @@ public interface AddNode extends JSONAction<JSONNode> {
 
     @Getter(value = KEY_KEY)
     @XMLAttribute
+    @FMLAttribute(value = KEY_KEY, required = false, description = "")
+
     public DataBinding<String> getKey();
 
     @Setter(KEY_KEY)
@@ -50,6 +53,7 @@ public interface AddNode extends JSONAction<JSONNode> {
 
     @Getter(value = CONTENT_KEY)
     @XMLAttribute
+    @FMLAttribute(value = CONTENT_KEY, required = false, description = "")
     public DataBinding<String> getContent();
 
     @Setter(CONTENT_KEY)
