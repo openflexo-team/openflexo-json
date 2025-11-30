@@ -65,7 +65,7 @@ import org.openflexo.ta.json.rm.JSONResource;
  *
  */
 @DeclareFlexoRoles({ JSONNodeRole.class })
-@DeclareEditionActions({ AddNode.class })
+@DeclareEditionActions({ AddNode.class, DeleteNode.class })
 @DeclareFetchRequests({ SelectNode.class })
 @DeclareActorReferences({ JSONNodeActorReference.class })
 @ModelEntity

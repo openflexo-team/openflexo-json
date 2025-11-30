@@ -130,6 +130,8 @@ public interface JSONNode extends JSONObject {
 
     public JSONNode createNode(String key, String content);
 
+    public JSONNode deleteNode(String key);
+
     public String getContent();
 
     public JSONNode getNodeWithKey(String key);
@@ -214,6 +216,44 @@ public interface JSONNode extends JSONObject {
 
             JSONNode returned = document.getFactory().makeJSONNode(node, rootNode, false);
             rootNode.getChildren().add(returned);
+
+            return returned;
+        }
+
+        @Override
+        public JSONNode deleteNode(String key){
+            JSONDocument  document = getJSONDocument();
+            ObjectMapper mapper = document.getResource().getObjectMapper();
+
+            ObjectNode root = (ObjectNode) document.getRootNode().getNode();
+           /* for (JSONNode child : getChildren()) {
+                if (key.equals(child.getNodeWithKey(key))) {
+                    root.remove(key);
+                    break;
+                }
+            }*/
+
+            root.remove(key);
+
+            if (root == null) {
+                // Nothing to remove
+                return document.getRootNode();
+            }
+
+            JSONNode rootNode = document.getRootNode();
+            rootNode.setNode(root);
+
+            //JSONNode returned = document.getFactory().makeJSONNode(root, rootNode, false);
+
+
+            for (JSONNode child : rootNode.getChildren()) {
+                if (key.equals(child.getNodeWithKey(key))) {
+                    rootNode.getChildren().remove(child);
+                    break;
+                }
+            }
+            JSONNode returned = document.getFactory().makeJSONNode(root, rootNode, false);
+            rootNode.getChildren().remove(returned);
 
             return returned;
         }
