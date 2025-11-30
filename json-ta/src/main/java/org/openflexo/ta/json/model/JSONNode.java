@@ -41,6 +41,7 @@ package org.openflexo.ta.json.model;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.openflexo.pamela.annotations.Adder;
 import org.openflexo.pamela.annotations.CloningStrategy;
@@ -88,7 +89,7 @@ public interface JSONNode extends JSONObject {
 	/**
 	 * Sets {@link JSONDocument} where this {@link JSONNode} is defined
 	 * 
-	 * @param text
+	 * @param document
 	 */
 	@Setter(DOCUMENT_KEY)
 	public void setJSONDocument(JSONDocument document);
@@ -104,7 +105,7 @@ public interface JSONNode extends JSONObject {
 	/**
 	 * Sets {@link JsonNode} encoding this node
 	 * 
-	 * @param text
+	 * @param node
 	 */
 	@Setter(NODE_KEY)
 	public void setNode(JsonNode node);
@@ -126,6 +127,8 @@ public interface JSONNode extends JSONObject {
 
 	@Remover(CHILDREN_KEY)
 	public void removeFromChildren(JSONNode aNode);
+
+    public JSONNode createNode(String key, String content);
 
     public String getContent();
 
@@ -187,7 +190,36 @@ public interface JSONNode extends JSONObject {
             objectNode.put(key, value);
         }
 
-	}
+        /**
+         * Creates a new JSON node with the given key and content, inserts it into the
+         * document's root object, and returns the corresponding {@link JSONNode}.
+         * @param key      the JSON field name to create
+         * @param content  the textual content associated with the given key
+         *
+         * @return the newly created {@link JSONNode} representing the key/value pair
+         */
+        @Override
+        public JSONNode createNode(String key, String content){
+            JSONDocument  document = getJSONDocument();
+            ObjectMapper mapper = document.getResource().getObjectMapper();
+
+            ObjectNode node = mapper.createObjectNode();
+            node.put(key, content);
+
+            ObjectNode root = (ObjectNode) document.getRootNode().getNode();
+            root.set(key, node.get(key));
+
+            JSONNode rootNode = document.getRootNode();
+            rootNode.setNode(root);
+
+            JSONNode returned = document.getFactory().makeJSONNode(node, rootNode, false);
+            rootNode.getChildren().add(returned);
+
+            return returned;
+        }
+
+
+    }
 
 
 }

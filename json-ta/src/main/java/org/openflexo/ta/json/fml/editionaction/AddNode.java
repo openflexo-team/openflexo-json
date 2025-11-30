@@ -87,18 +87,8 @@ public interface AddNode extends JSONAction<JSONNode> {
                 throw new RuntimeException(e);
             }
             JSONDocument resourceData = getReceiver(evaluationContext);
-
-            ObjectMapper mapper = new ObjectMapper();
-            ObjectNode node = mapper.createObjectNode();
-            node.put(key, content);
-
-
-            ObjectNode root = (ObjectNode) resourceData.getRootNode().getNode();
-            root.set(key, node.get(key));
-            resourceData.getRootNode().setNode(root);
-
-
-            return resourceData.getRootNode();
+            // Add the new node to the json document
+            return resourceData.getRootNode().createNode(key, content);
 
         }
 
