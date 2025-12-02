@@ -1,39 +1,39 @@
 /**
- * 
+ *
  * Copyright (c) 2018, Openflexo
- * 
- * This file is part of OpenflexoTechnologyAdapter, a component of the software infrastructure 
+ * <p>
+ * This file is part of OpenflexoTechnologyAdapter, a component of the software infrastructure
  * developed at Openflexo.
- * 
- * 
- * Openflexo is dual-licensed under the European Union Public License (EUPL, either 
- * version 1.1 of the License, or any later version ), which is available at 
+ * <p>
+ * <p>
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either
+ * version 1.1 of the License, or any later version ), which is available at
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * and the GNU General Public License (GPL, either version 3 of the License, or any 
+ * and the GNU General Public License (GPL, either version 3 of the License, or any
  * later version), which is available at http://www.gnu.org/licenses/gpl.html .
- * 
+ * <p>
  * You can redistribute it and/or modify under the terms of either of these licenses
- * 
+ * <p>
  * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
  * must include the following additional permission.
- *
- *          Additional permission under GNU GPL version 3 section 7
- *
- *          If you modify this Program, or any covered work, by linking or 
- *          combining it with software containing parts covered by the terms 
- *          of EPL 1.0, the licensors of this Program grant you additional permission
- *          to convey the resulting work. * 
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. 
- *
+ * <p>
+ * Additional permission under GNU GPL version 3 section 7
+ * <p>
+ * If you modify this Program, or any covered work, by linking or
+ * combining it with software containing parts covered by the terms
+ * of EPL 1.0, the licensors of this Program grant you additional permission
+ * to convey the resulting work. *
+ * <p>
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ * <p>
  * See http://www.openflexo.org/license.html for details.
- * 
- * 
+ * <p>
+ * <p>
  * Please contact Openflexo (openflexo-contacts@openflexo.org)
  * or visit www.openflexo.org if you need additional information.
- * 
+ *
  */
 
 package org.openflexo.ta.json.model;
@@ -61,7 +61,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Represents a JSON node inside a {@link JSONDocument}
- * 
+ *
  * @author sylvain
  *
  */
@@ -70,63 +70,63 @@ import com.fasterxml.jackson.databind.JsonNode;
 @XMLElement
 public interface JSONNode extends JSONObject {
 
-	@PropertyIdentifier(type = JSONNode.class, cardinality = Cardinality.LIST)
-	public static final String CHILDREN_KEY = "children";
-	@PropertyIdentifier(type = JSONDocument.class)
-	public static final String DOCUMENT_KEY = "document";
-	@PropertyIdentifier(type = JsonNode.class)
-	public static final String NODE_KEY = "node";
+    @PropertyIdentifier(type = JSONNode.class, cardinality = Cardinality.LIST)
+    public static final String CHILDREN_KEY = "children";
+    @PropertyIdentifier(type = JSONDocument.class)
+    public static final String DOCUMENT_KEY = "document";
+    @PropertyIdentifier(type = JsonNode.class)
+    public static final String NODE_KEY = "node";
 
-	/**
-	 * Return {@link JSONDocument} where this {@link JSONNode} is defined
-	 * 
-	 * @return
-	 */
-	@Override
-	@Getter(value = DOCUMENT_KEY)
-	public JSONDocument getJSONDocument();
+    /**
+     * Return {@link JSONDocument} where this {@link JSONNode} is defined
+     *
+     * @return
+     */
+    @Override
+    @Getter(value = DOCUMENT_KEY)
+    public JSONDocument getJSONDocument();
 
-	/**
-	 * Sets {@link JSONDocument} where this {@link JSONNode} is defined
-	 * 
-	 * @param document
-	 */
-	@Setter(DOCUMENT_KEY)
-	public void setJSONDocument(JSONDocument document);
+    /**
+     * Sets {@link JSONDocument} where this {@link JSONNode} is defined
+     *
+     * @param document
+     */
+    @Setter(DOCUMENT_KEY)
+    public void setJSONDocument(JSONDocument document);
 
-	/**
-	 * Return {@link JsonNode} encoding this node
-	 * 
-	 * @return
-	 */
-	@Getter(value = NODE_KEY, ignoreType = true)
-	public JsonNode getNode();
+    /**
+     * Return {@link JsonNode} encoding this node
+     *
+     * @return
+     */
+    @Getter(value = NODE_KEY, ignoreType = true)
+    public JsonNode getNode();
 
-	/**
-	 * Sets {@link JsonNode} encoding this node
-	 * 
-	 * @param node
-	 */
-	@Setter(NODE_KEY)
-	public void setNode(JsonNode node);
+    /**
+     * Sets {@link JsonNode} encoding this node
+     *
+     * @param node
+     */
+    @Setter(NODE_KEY)
+    public void setNode(JsonNode node);
 
-	/**
-	 * Return all {@link JSONNode} defined in this {@link JSONDocument}
-	 * 
-	 * @return
-	 */
-	@Getter(value = CHILDREN_KEY, cardinality = Cardinality.LIST)
-	@XMLElement
-	@Embedded
-	@CloningStrategy(StrategyType.CLONE)
-	public List<JSONNode> getChildren();
+    /**
+     * Return all {@link JSONNode} defined in this {@link JSONDocument}
+     *
+     * @return
+     */
+    @Getter(value = CHILDREN_KEY, cardinality = Cardinality.LIST)
+    @XMLElement
+    @Embedded
+    @CloningStrategy(StrategyType.CLONE)
+    public List<JSONNode> getChildren();
 
-	@Adder(CHILDREN_KEY)
-	@PastingPoint
-	public void addToChildren(JSONNode aNode);
+    @Adder(CHILDREN_KEY)
+    @PastingPoint
+    public void addToChildren(JSONNode aNode);
 
-	@Remover(CHILDREN_KEY)
-	public void removeFromChildren(JSONNode aNode);
+    @Remover(CHILDREN_KEY)
+    public void removeFromChildren(JSONNode aNode);
 
     public JSONNode createNode(String key, String content);
 
@@ -138,25 +138,25 @@ public interface JSONNode extends JSONObject {
 
     public void setNodeValue(String key, String value);
 
-	/**
-	 * Default base implementation for {@link JSONNode}
-	 * 
-	 * @author sylvain
-	 *
-	 */
+    /**
+     * Default base implementation for {@link JSONNode}
+     *
+     * @author sylvain
+     *
+     */
     public static abstract class JSONNodeImpl extends JSONObjectImpl implements JSONNode {
 
         @SuppressWarnings("unused")
         private static final Logger logger = Logger.getLogger(JSONNode.class.getPackage().getName());
 
-		public JSONNodeImpl() {
+        public JSONNodeImpl() {
 
-		}
+        }
 
-		@Override
-		public JSONDocument getResourceData() {
-			return getJSONDocument();
-		}
+        @Override
+        public JSONDocument getResourceData() {
+            return getJSONDocument();
+        }
 
         @Override
         public JSONNode getNodeWithKey(String key) {
@@ -201,8 +201,8 @@ public interface JSONNode extends JSONObject {
          * @return the newly created {@link JSONNode} representing the key/value pair
          */
         @Override
-        public JSONNode createNode(String key, String content){
-            JSONDocument  document = getJSONDocument();
+        public JSONNode createNode(String key, String content) {
+            JSONDocument document = getJSONDocument();
             ObjectMapper mapper = document.getResource().getObjectMapper();
 
             ObjectNode node = mapper.createObjectNode();
@@ -214,48 +214,35 @@ public interface JSONNode extends JSONObject {
             JSONNode rootNode = document.getRootNode();
             rootNode.setNode(root);
 
-            JSONNode returned = document.getFactory().makeJSONNode(node, rootNode, false);
+            JSONNode returned = getFactory().makeJSONNode(node.get(key), rootNode, false);
             rootNode.getChildren().add(returned);
 
             return returned;
         }
 
         @Override
-        public JSONNode deleteNode(String key){
-            JSONDocument  document = getJSONDocument();
-            ObjectMapper mapper = document.getResource().getObjectMapper();
+        public JSONNode deleteNode(String key) {
+
+            JSONDocument document = getJSONDocument();
+
+            JSONNode nodeToDelete = this.getNodeWithKey(key);
 
             ObjectNode root = (ObjectNode) document.getRootNode().getNode();
-           /* for (JSONNode child : getChildren()) {
-                if (key.equals(child.getNodeWithKey(key))) {
-                    root.remove(key);
-                    break;
-                }
-            }*/
-
             root.remove(key);
 
-            if (root == null) {
-                // Nothing to remove
-                return document.getRootNode();
-            }
 
             JSONNode rootNode = document.getRootNode();
             rootNode.setNode(root);
 
-            //JSONNode returned = document.getFactory().makeJSONNode(root, rootNode, false);
-
 
             for (JSONNode child : rootNode.getChildren()) {
-                if (key.equals(child.getNodeWithKey(key))) {
+                if (nodeToDelete.getNode().equals(child.getNode())) {
                     rootNode.getChildren().remove(child);
                     break;
                 }
             }
-            JSONNode returned = document.getFactory().makeJSONNode(root, rootNode, false);
-            rootNode.getChildren().remove(returned);
 
-            return returned;
+            return rootNode;
         }
 
 
