@@ -1,8 +1,6 @@
 package org.openflexo.ta.json.fml.editionaction;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,8 +11,6 @@ import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.annotations.FMLAttribute;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.foundation.fml.validation.BindingIsRequiredAndMustBeValid;
-import org.openflexo.foundation.ontology.DuplicateURIException;
-import org.openflexo.foundation.ontology.fml.editionaction.AddClass;
 import org.openflexo.pamela.annotations.DefineValidationRule;
 import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.ImplementationClass;
@@ -26,9 +22,6 @@ import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONModelSlot;
 import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.model.JSONNode;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @ModelEntity
 @ImplementationClass(AddNode.AddNodeImpl.class)
@@ -54,10 +47,10 @@ public interface AddNode extends JSONAction<JSONNode> {
     @Getter(value = CONTENT_KEY)
     @XMLAttribute
     @FMLAttribute(value = CONTENT_KEY, required = false, description = "")
-    public DataBinding<String> getContent();
+    public DataBinding<Object> getContent();
 
     @Setter(CONTENT_KEY)
-    public void setContent(DataBinding<String> content);
+    public void setContent(DataBinding<Object> content);
 
     public static abstract class AddNodeImpl extends TechnologySpecificActionDefiningReceiverImpl<JSONModelSlot, JSONDocument, JSONNode>
             implements AddNode {
@@ -65,7 +58,7 @@ public interface AddNode extends JSONAction<JSONNode> {
         private static final Logger logger = Logger.getLogger(AddNode.class.getPackage().getName());
 
         private DataBinding<String> key;
-        private DataBinding<String> content;
+        private DataBinding<Object> content;
 
         @Override
         public Type getAssignableType() {
@@ -74,8 +67,8 @@ public interface AddNode extends JSONAction<JSONNode> {
 
         @Override
         public JSONNode execute(RunTimeEvaluationContext evaluationContext) {
-            String key = null;
-            String content = null;
+            String key;
+            Object content;
             try {
                 key = getKey().getBindingValue(evaluationContext);
                 content = getContent().getBindingValue(evaluationContext);
@@ -86,6 +79,23 @@ public interface AddNode extends JSONAction<JSONNode> {
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
+
+            if (content == null) {
+                throw new IllegalArgumentException("AddNode: content evaluated to null");
+            }
+
+            if (!(content instanceof String) &&
+                    !(content instanceof Number) &&
+                    !(content instanceof Boolean) &&
+                    !(content instanceof JsonNode) &&
+                    !(content instanceof java.util.Map) &&
+                    !(content instanceof java.util.List)) {
+
+                throw new IllegalArgumentException(
+                        "Unsupported content type for AddNode: " + content.getClass().getName()
+                );
+            }
+
             JSONDocument resourceData = getReceiver(evaluationContext);
             // Add the new node to the json document
             return resourceData.getRootNode().createNode(key, content);
@@ -113,19 +123,19 @@ public interface AddNode extends JSONAction<JSONNode> {
         }
 
         @Override
-        public DataBinding<String> getContent() {
+        public DataBinding<Object> getContent() {
             if (content == null) {
-                content = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
+                content = new DataBinding<>(this, Object.class, DataBinding.BindingDefinitionType.GET);
                 content.setBindingName("content");
             }
             return content;
         }
 
         @Override
-        public void setContent(DataBinding<String> content) {
+        public void setContent(DataBinding<Object> content) {
             if (content != null) {
                 content.setOwner(this);
-                content.setDeclaredType(String.class);
+                content.setDeclaredType(Object.class);
                 content.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
                 content.setBindingName("content");
             }
@@ -153,7 +163,7 @@ public interface AddNode extends JSONAction<JSONNode> {
         }
 
         @Override
-        public DataBinding<String> getBinding(AddNode object) {
+        public DataBinding<?> getBinding(AddNode object) {
             return object.getContent();
         }
     }

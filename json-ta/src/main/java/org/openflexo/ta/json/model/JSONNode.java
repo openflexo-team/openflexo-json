@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.openflexo.pamela.annotations.Adder;
 import org.openflexo.pamela.annotations.CloningStrategy;
@@ -128,15 +129,23 @@ public interface JSONNode extends JSONObject {
     @Remover(CHILDREN_KEY)
     public void removeFromChildren(JSONNode aNode);
 
-    public JSONNode createNode(String key, String content);
+    public JSONNode createNode(String key, Object value);
+
+    public JSONNode createObjectNode(String key);
+
+    public JSONNode createArrayNode(String key);
 
     public JSONNode deleteNode(String key);
 
-    public String getContent();
+    public JsonNode getContent();
 
     public JSONNode getNodeWithKey(String key);
 
-    public void setNodeValue(String key, String value);
+    public void setNodeValue(String key, Object value);
+
+    public JSONNode addArrayElement(Object value);
+
+    public void removeArrayElement(int index);
 
     /**
      * Default base implementation for {@link JSONNode}
@@ -181,15 +190,26 @@ public interface JSONNode extends JSONObject {
         }
 
         @Override
-        public String getContent() {
-            return getNode().toString();
+        public JsonNode getContent() {
+            return getNode();
         }
 
         @Override
-        public void setNodeValue(String key, String value) {
-            JsonNode node = getNode();
-            ObjectNode objectNode = (ObjectNode) node;
-            objectNode.put(key, value);
+        public void setNodeValue(String key, Object value) {
+            JsonNode current = getNode();
+            if (!(current instanceof ObjectNode)) {
+                throw new IllegalStateException(
+                        "Cannot set a key on a non-object JSON node: " +
+                                (current != null ? current.getNodeType() : "null")
+                );
+            }
+
+            ObjectMapper mapper = getJSONDocument()
+                    .getResource()
+                    .getObjectMapper();
+
+            JsonNode jsonValue = mapper.valueToTree(value);
+            ((ObjectNode) current).set(key, jsonValue);
         }
 
         /**
@@ -201,23 +221,130 @@ public interface JSONNode extends JSONObject {
          * @return the newly created {@link JSONNode} representing the key/value pair
          */
         @Override
-        public JSONNode createNode(String key, String content) {
-            JSONDocument document = getJSONDocument();
-            ObjectMapper mapper = document.getResource().getObjectMapper();
+        public JSONNode createNode(String key, Object content) {
+            JsonNode current = getNode();
 
-            ObjectNode node = mapper.createObjectNode();
-            node.put(key, content);
+            if (!(current instanceof ObjectNode)) {
+                throw new IllegalStateException(
+                        "Cannot add a keyed node to a non-object JSON node: " +
+                                (current != null ? current.getNodeType() : "null")
+                );
+            }
 
-            ObjectNode root = (ObjectNode) document.getRootNode().getNode();
-            root.set(key, node.get(key));
+            ObjectMapper mapper = getJSONDocument()
+                    .getResource()
+                    .getObjectMapper();
 
-            JSONNode rootNode = document.getRootNode();
-            rootNode.setNode(root);
+            JsonNode jsonValue = mapper.valueToTree(content);
 
-            JSONNode returned = getFactory().makeJSONNode(node.get(key), rootNode, false);
-            rootNode.getChildren().add(returned);
-            setIsModified();
-            return returned;
+            ObjectNode objectNode = (ObjectNode) current;
+            objectNode.set(key, jsonValue);
+
+            JSONNode created = getFactory().makeJSONNode(jsonValue, this, false);
+            addToChildren(created);
+
+            return created;
+        }
+
+        @Override
+        public JSONNode createObjectNode(String key) {
+            JsonNode current = getNode();
+            if (!(current instanceof ObjectNode)) {
+                throw new IllegalStateException(
+                        "Cannot add an object node to a non-object JSON node: " +
+                                (current != null ? current.getNodeType() : "null")
+                );
+            }
+
+            ObjectMapper mapper = getJSONDocument()
+                    .getResource()
+                    .getObjectMapper();
+
+            ObjectNode objectValue = mapper.createObjectNode();
+
+            ObjectNode parent = (ObjectNode) current;
+            parent.set(key, objectValue);
+
+            JSONNode created = getFactory().makeJSONNode(objectValue, this, false);
+            addToChildren(created);
+
+            return created;
+        }
+
+        @Override
+        public JSONNode createArrayNode(String key) {
+            JsonNode current = getNode();
+            if (!(current instanceof ObjectNode)) {
+                throw new IllegalStateException(
+                        "Cannot add an array node to a non-object JSON node: " +
+                                (current != null ? current.getNodeType() : "null")
+                );
+            }
+
+            ObjectMapper mapper = getJSONDocument()
+                    .getResource()
+                    .getObjectMapper();
+
+            ArrayNode arrayValue = mapper.createArrayNode();
+
+            ObjectNode parent = (ObjectNode) current;
+            parent.set(key, arrayValue);
+
+            JSONNode created = getFactory().makeJSONNode(arrayValue, this, false);
+            addToChildren(created);
+
+            return created;
+        }
+
+        @Override
+        public JSONNode addArrayElement(Object value) {
+            JsonNode current = getNode();
+            if (!(current instanceof ArrayNode)) {
+                throw new IllegalStateException(
+                        "Cannot add element to a non-array JSON node: " +
+                                (current != null ? current.getNodeType() : "null")
+                );
+            }
+
+            ObjectMapper mapper = getJSONDocument()
+                    .getResource()
+                    .getObjectMapper();
+
+            JsonNode jsonValue = mapper.valueToTree(value);
+
+            ArrayNode array = (ArrayNode) current;
+            array.add(jsonValue);
+
+            JSONNode created = getFactory().makeJSONNode(jsonValue, this, false);
+            addToChildren(created);
+
+            return created;
+        }
+
+        @Override
+        public void removeArrayElement(int index) {
+            JsonNode current = getNode();
+            if (!(current instanceof ArrayNode)) {
+                throw new IllegalStateException(
+                        "Cannot remove element from a non-array JSON node: " +
+                                (current != null ? current.getNodeType() : "null")
+                );
+            }
+
+            ArrayNode array = (ArrayNode) current;
+
+            if (index < 0 || index >= array.size()) {
+                throw new IndexOutOfBoundsException(
+                        "Index " + index + " out of bounds for array of size " + array.size()
+                );
+            }
+
+            JsonNode removed = array.get(index);
+            array.remove(index);
+
+            getChildren().removeIf(child ->
+                    child.getNode().equals(removed)
+            );
         }
 
         @Override

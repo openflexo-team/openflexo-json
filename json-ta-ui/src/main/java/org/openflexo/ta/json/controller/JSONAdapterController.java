@@ -53,6 +53,7 @@ import org.openflexo.ta.json.JSONTechnologyAdapter;
 import org.openflexo.ta.json.fml.JSONNodeRole;
 import org.openflexo.ta.json.fml.editionaction.AbstractSelectNode;
 import org.openflexo.ta.json.fml.editionaction.AddNode;
+import org.openflexo.ta.json.fml.editionaction.DeleteNode;
 import org.openflexo.ta.json.gui.JSONIconLibrary;
 import org.openflexo.ta.json.model.JSONNode;
 import org.openflexo.ta.json.model.JSONObject;
@@ -186,6 +187,9 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 		else if (AbstractSelectNode.class.isAssignableFrom(editionActionClass)) {
 			return IconFactory.getImageIcon(getIconForTechnologyObject(JSONNode.class), IconLibrary.IMPORT);
 		}
+        else if (DeleteNode.class.isAssignableFrom(editionActionClass)) {
+            return IconFactory.getImageIcon(getIconForTechnologyObject(JSONNode.class), IconLibrary.DELETE);
+        }
 		return super.getIconForEditionAction(editionActionClass);
 	}
 
