@@ -51,8 +51,8 @@ import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
 import org.openflexo.ta.json.fml.JSONNodeRole;
-import org.openflexo.ta.json.fml.editionaction.AbstractSelectXXLine;
-import org.openflexo.ta.json.fml.editionaction.AddXXLine;
+import org.openflexo.ta.json.fml.editionaction.AbstractSelectNode;
+import org.openflexo.ta.json.fml.editionaction.AddNode;
 import org.openflexo.ta.json.gui.JSONIconLibrary;
 import org.openflexo.ta.json.model.JSONNode;
 import org.openflexo.ta.json.model.JSONObject;
@@ -180,10 +180,10 @@ public class JSONAdapterController extends TechnologyAdapterController<JSONTechn
 	 */
 	@Override
 	public ImageIcon getIconForEditionAction(Class<? extends EditionAction> editionActionClass) {
-		if (AddXXLine.class.isAssignableFrom(editionActionClass)) {
+		if (AddNode.class.isAssignableFrom(editionActionClass)) {
 			return IconFactory.getImageIcon(getIconForTechnologyObject(JSONNode.class), IconLibrary.DUPLICATE);
 		}
-		else if (AbstractSelectXXLine.class.isAssignableFrom(editionActionClass)) {
+		else if (AbstractSelectNode.class.isAssignableFrom(editionActionClass)) {
 			return IconFactory.getImageIcon(getIconForTechnologyObject(JSONNode.class), IconLibrary.IMPORT);
 		}
 		return super.getIconForEditionAction(editionActionClass);
