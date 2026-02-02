@@ -216,7 +216,7 @@ public interface JSONNode extends JSONObject {
 
             JSONNode returned = getFactory().makeJSONNode(node.get(key), rootNode, false);
             rootNode.getChildren().add(returned);
-
+            setIsModified();
             return returned;
         }
 
