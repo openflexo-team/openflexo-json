@@ -147,6 +147,8 @@ public interface JSONNode extends JSONObject {
 
     public void removeArrayElement(int index);
 
+    JSONNode getArrayElementAt(int index);
+
     /**
      * Default base implementation for {@link JSONNode}
      *
@@ -168,6 +170,36 @@ public interface JSONNode extends JSONObject {
         }
 
         @Override
+        public List<JSONNode> getChildren() {
+            JsonNode node = getNode();
+
+            if (node == null) {
+                return java.util.Collections.emptyList();
+            }
+
+            List<JSONNode> listChildren = new java.util.ArrayList<>();
+
+            // children are array elements
+            if (node.isArray()) {
+                for (JsonNode element : node) {
+                    listChildren.add(getFactory().makeJSONNode(element, this, false));
+                }
+                return listChildren;
+            }
+
+            // children are values
+            if (node.isObject()) {
+                node.fields().forEachRemaining(entry -> {
+                    listChildren.add(getFactory().makeJSONNode(entry.getValue(), this, false));
+                });
+                return listChildren;
+            }
+
+            // Primitive → no children
+            return java.util.Collections.emptyList();
+        }
+
+        @Override
         public JSONNode getNodeWithKey(String key) {
             if (key == null || key.isEmpty()) return null;
 
@@ -185,6 +217,8 @@ public interface JSONNode extends JSONObject {
                     return found;
                 }
             }
+
+            JsonNode jacksonNode = getNode().at("");
 
             return null;
         }
@@ -211,6 +245,22 @@ public interface JSONNode extends JSONObject {
             JsonNode jsonValue = mapper.valueToTree(value);
             ((ObjectNode) current).set(key, jsonValue);
         }
+
+        @Override
+        public JSONNode getArrayElementAt(int index) {
+            JsonNode n = getNode();
+            if (!n.isArray()) {
+                throw new IllegalStateException("Not an array node");
+            }
+
+            JsonNode element = n.get(index);
+            if (element == null) {
+                return null;
+            }
+
+            return getFactory().makeJSONNode(element, this, false);
+        }
+
 
         /**
          * Creates a new JSON node with the given key and content, inserts it into the
