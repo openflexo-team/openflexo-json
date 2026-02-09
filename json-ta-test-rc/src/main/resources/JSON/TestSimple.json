@@ -1,0 +1,16 @@
+{
+  "name" : "Bob",
+  "age" : 32,
+  "location" : "Brest, France",
+  "interests" : [ "traveling", "Music", "reading" ],
+  "occupation" : {
+    "current" : "Doctor",
+    "company" : "Reasearch",
+    "side_hustle_hours_per_week" : 12
+  },
+  "setup" : {
+    "laptop" : "MacBook Pro",
+    "screen" : "34-inch HDR",
+    "peripherals" : [ "trackpad", "mechanical keyboard" ]
+  }
+}

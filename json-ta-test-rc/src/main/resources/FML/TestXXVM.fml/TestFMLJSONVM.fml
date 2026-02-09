@@ -1,0 +1,86 @@
+use org.openflexo.ta.json.JSONModelSlot as JSON;
+use org.openflexo.foundation.fml.rt.FMLRTModelSlot as FMLRT;
+
+import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONNode;
+import java.lang.String;
+
+
+@URI("http://www.openflexo.org/projects/2025/11/JsonProjectTest_1764458135187.prj/JsonVirtuelModelDemo.fml")
+
+@Author("chahrazed")
+public model JsonVirtuelModelDemo {
+
+   JSONDocument document with JSONModelSlot();
+
+   create(required Resource<JSONDocument> doc) {
+      connect document using parameters.doc;
+      log "DocumentJSON: " + document;
+   }
+
+   concept JsonAddition {
+      JSONNode sourceNode;
+
+      create::_create(String aKey) {
+         sourceNode = document.rootNode.getNodeWithKey(parameters.aKey);
+      }
+
+      public void logContent() {
+         log sourceNode.node.toString;
+      }
+
+      public void addBooleanProperty() {
+         sourceNode.createNode("demo_boolean",true);
+      }
+
+      public void addStringProperty() {
+         sourceNode.createNode("demo_string","string value");
+         log document.rootNode.getNodeWithKey("demo_string").node.toString;
+      }
+
+      public void addNumberProperty() {
+         sourceNode.createNode("demo_number",1234);
+      }
+
+      public void addObjectProperty() {
+         JSONNode obj = sourceNode.createObjectNode("demo_node");
+         obj.createNode("object",500);
+      }
+
+      public void addArrayProperty() {
+         // "demo_array": []
+         JSONNode arr = sourceNode.createArrayNode("demo_array");
+         // "demo_array": [1]
+         arr.addArrayElement(1);
+         // "demo_array": [1, 2]
+         arr.addArrayElement(2);
+         // "demo_array": [1, 2, 3]
+         arr.addArrayElement(3);
+         // "demo_array": [1, 3]
+         arr.removeArrayElement(1);
+
+      }
+
+      delete::_delete() {
+
+      }
+   }
+
+    concept JsonSelection {
+
+      public void selectFirstLevelNode() {
+         log document.rootNode.getNodeWithKey("model").node.toString;
+      }
+
+      public void selectMultiLevelsNode() {
+         log document.rootNode.getNodeWithKey("deployment").getNodeWithKey("environments").node.toString;
+      }
+
+      delete::_delete() {
+
+      }
+   }
+
+   delete() {
+   }
+}

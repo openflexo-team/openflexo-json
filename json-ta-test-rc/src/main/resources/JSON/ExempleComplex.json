@@ -1,0 +1,69 @@
+{
+  "model" : {
+    "name" : "DistributedSystem",
+    "version" : "2.1",
+    "status" : "draft",
+    "demo_node" : {
+      "object" : 500
+    }
+  },
+  "components" : [ {
+    "id" : "cmp-001",
+    "type" : "Service",
+    "name" : "AuthService",
+    "interfaces" : [ {
+      "name" : "REST",
+      "endpoint" : "/auth",
+      "methods" : [ "POST", "DELETE" ]
+    } ],
+    "resources" : {
+      "cpu" : 2,
+      "memoryMB" : 1024
+    },
+    "dependencies" : [ "cmp-002" ]
+  }, {
+    "id" : "cmp-002",
+    "type" : "Database",
+    "name" : "UserDB",
+    "engine" : "PostgreSQL",
+    "resources" : {
+      "cpu" : 4,
+      "memoryMB" : 4096
+    }
+  } ],
+  "connectors" : [ {
+    "id" : "con-001",
+    "source" : "cmp-001",
+    "target" : "cmp-002",
+    "protocol" : "JDBC",
+    "properties" : {
+      "timeoutMs" : 2000,
+      "poolSize" : 10
+    }
+  } ],
+  "deployment" : {
+    "environments" : [ {
+      "name" : "dev",
+      "nodes" : [ {
+        "nodeId" : "node-dev-1",
+        "host" : "localhost",
+        "components" : [ "cmp-001", "cmp-002" ]
+      } ]
+    }, {
+      "name" : "prod",
+      "nodes" : [ {
+        "nodeId" : "node-prod-1",
+        "host" : "10.0.0.1",
+        "components" : [ "cmp-001" ]
+      }, {
+        "nodeId" : "node-prod-2",
+        "host" : "10.0.0.2",
+        "components" : [ "cmp-002" ]
+      } ]
+    } ]
+  },
+  "constraints" : {
+    "maxComponentsPerNode" : 5,
+    "allowedProtocols" : [ "REST", "JDBC" ]
+  }
+}
