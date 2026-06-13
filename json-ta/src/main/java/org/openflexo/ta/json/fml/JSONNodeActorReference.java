@@ -57,6 +57,7 @@ import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.model.JSONNode;
 import org.openflexo.ta.json.rm.JSONResource;
+import org.openflexo.ta.json.JSONModelSlot;
 
 /**
  * Implements {@link ActorReference} for {@link JSONNode} object
@@ -112,10 +113,13 @@ public interface JSONNodeActorReference extends ActorReference<JSONNode> {
 
 		@Override
 		public JSONNode getModellingElement(boolean forceLoading) {
-			/*if (object == null && objectURI != null) {
-				int index = Integer.parseInt(objectURI);
-				return getXXText().getLines().get(index);
-			}*/
+			if (object == null && objectURI != null && getModelSlotInstance() != null) {
+				JSONDocument document = getJSONDocument();
+				if (document != null && getModelSlotInstance().getModelSlot() instanceof JSONModelSlot) {
+					object = (JSONNode) ((JSONModelSlot) getModelSlotInstance().getModelSlot())
+							.retrieveObjectWithURI(document, objectURI);
+				}
+			}
 			if (object == null) {
 				logger.warning("Could not retrieve object " + objectURI);
 			}
@@ -126,16 +130,20 @@ public interface JSONNodeActorReference extends ActorReference<JSONNode> {
 		@Override
 		public void setModellingElement(JSONNode object) {
 			this.object = object;
-			/*if (object != null) {
-				objectURI = "" + object.getIndex();
-			}*/
+			if (object != null && getModelSlotInstance() != null
+					&& getModelSlotInstance().getModelSlot() instanceof JSONModelSlot) {
+				objectURI = ((JSONModelSlot) getModelSlotInstance().getModelSlot())
+						.getURIForObject(object.getJSONDocument(), object);
+			}
 		}
 
 		@Override
 		public String getObjectURI() {
-			/*if (object != null) {
-				return "" + object.getIndex();
-			}*/
+			if (object != null && getModelSlotInstance() != null
+					&& getModelSlotInstance().getModelSlot() instanceof JSONModelSlot) {
+				objectURI = ((JSONModelSlot) getModelSlotInstance().getModelSlot())
+						.getURIForObject(object.getJSONDocument(), object);
+			}
 			return objectURI;
 		}
 

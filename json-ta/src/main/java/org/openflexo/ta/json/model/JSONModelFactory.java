@@ -38,6 +38,8 @@
 
 package org.openflexo.ta.json.model;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.openflexo.foundation.PamelaResourceModelFactory;
@@ -47,15 +49,16 @@ import org.openflexo.pamela.PamelaMetaModelLibrary;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
 import org.openflexo.pamela.factory.EditingContext;
 import org.openflexo.pamela.factory.PamelaModelFactory;
+import org.openflexo.ta.json.JSONURIProcessor;
 import org.openflexo.ta.json.rm.JSONResource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * A {@link PamelaModelFactory} used to manage a XXText<br>
+ * A {@link PamelaModelFactory} used to manage a JSON document.<br>
  * One instance of this class should be used for each {@link JSONResource}
  * 
- * @author sylvain
+ * @author sylvain, Chahrazed
  * 
  */
 public class JSONModelFactory extends PamelaModelFactory implements PamelaResourceModelFactory<JSONResource> {
@@ -82,14 +85,40 @@ public class JSONModelFactory extends PamelaModelFactory implements PamelaResour
 		return newInstance(JSONDocument.class);
 	}
 
-	public JSONNode makeJSONNode(JsonNode node, JSONObject parent, boolean recursive) {
+	public JSONNode makeJSONNode(JsonNode node, JSONObject parent, String key, Integer index, boolean recursive) {
+		JSONDocument document = parent.getJSONDocument();
+		String pointer = JSONURIProcessor.computePointer(parent, key, index);
+		String uri = JSONURIProcessor.toURI(document, pointer);
+		JSONNode existing = document.getNodeByURI(uri);
+
+		if (existing != null) {
+			existing.setNode(node);
+			return existing;
+		}
+
 		JSONNode returned = newInstance(JSONNode.class);
+		returned.setJSONDocument(document);
 		returned.setNode(node);
-		returned.setJSONDocument(parent.getJSONDocument());
-		System.out.println("Read " + node);
-		if (recursive) {
+		returned.setKey(key);
+		returned.setIndex(index);
+		returned.setJsonPointer(pointer);
+		returned.setURI(uri);
+		if (parent instanceof JSONNode) {
+			returned.setParent((JSONNode) parent);
+		}
+		document.registerNode(returned);
+
+		if (recursive && node != null && node.isObject()) {
+			Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
+			while (fields.hasNext()) {
+				Map.Entry<String, JsonNode> field = fields.next();
+				returned.addToChildren(makeJSONNode(field.getValue(), returned, field.getKey(), null, true));
+			}
+		}
+		else if (recursive && node != null && node.isArray()) {
+			int childIndex = 0;
 			for (JsonNode child : node) {
-				returned.addToChildren(makeJSONNode(child, returned, true));
+				returned.addToChildren(makeJSONNode(child, returned, null, childIndex++, true));
 			}
 		}
 		return returned;

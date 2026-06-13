@@ -19,14 +19,16 @@ import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONModelSlot;
-import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.model.JSONNode;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Delete a field from the JSON root object.
+ *
+ * Delete a field from the JSON object supplied as receiver.
+ *
+ * @author Chahrazed
  */
+
 @ModelEntity
 @ImplementationClass(DeleteNode.DeleteNodeImpl.class)
 @XMLElement
@@ -48,7 +50,7 @@ public interface DeleteNode extends JSONAction<JSONNode> {
      * Implementation of DeleteNode.
      */
     abstract class DeleteNodeImpl extends
-            TechnologySpecificActionDefiningReceiverImpl<JSONModelSlot, JSONDocument, JSONNode>
+            TechnologySpecificActionDefiningReceiverImpl<JSONModelSlot, JSONNode, JSONNode>
             implements DeleteNode {
 
         private static final Logger logger = Logger.getLogger(DeleteNode.class.getPackage().getName());
@@ -70,24 +72,11 @@ public interface DeleteNode extends JSONAction<JSONNode> {
                 throw new RuntimeException(e);
             }
 
-            System.out.println("ketToDelete: " +keyToDelete);
-
-            JSONDocument document = getReceiver(evaluationContext);
-
-            //JSONNode rootNode = document.getRootNode();
-            //ObjectNode root = (ObjectNode) rootNode.getNode();
-
-            // Remove the field
-            //root.remove(keyToDelete);
-
-            // Update internal JSONNode structure
-           // rootNode.setNode(root);
-
-            // Remove child JSONNode corresponding to the deleted key
-            //rootNode.getChildren().removeIf(child -> keyToDelete.equals(child.getName()));
-
-            // Returning root node (operation returns updated JSONDocument root)
-            return document.getRootNode().deleteNode(keyToDelete);
+            JSONNode receiver = getReceiver(evaluationContext);
+            if (receiver == null) {
+                throw new IllegalArgumentException("DeleteNode: receiver evaluated to null");
+            }
+            return receiver.deleteNode(keyToDelete);
         }
 
         @Override

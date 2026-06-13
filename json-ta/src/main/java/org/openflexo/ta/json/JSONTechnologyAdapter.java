@@ -49,13 +49,9 @@ import org.openflexo.ta.json.rm.JSONResourceFactory;
 import org.openflexo.ta.json.rm.JSONResourceRepository;
 
 /**
- * This class defines and implements an archetype of a technology adapter<br>
+ * Technology adapter exposing JSON documents and stable JSON node objects.
  * 
- * The idea is to demonstrate TechnologyAdapter API.
- * 
- * We offer the connection to a text file with a single role mapping a line in a text file
- * 
- * @author sylvain
+ * @author sylvain, Chahrazed
  * 
  */
 @DeclareModelSlots({ JSONModelSlot.class })
@@ -101,7 +97,7 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 		return "JSON";
 	}
 
-	public JSONResourceFactory getXXResourceFactory() {
+	public JSONResourceFactory getJSONResourceFactory() {
 		return getResourceFactory(JSONResourceFactory.class);
 	}
 

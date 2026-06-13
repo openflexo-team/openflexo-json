@@ -46,7 +46,7 @@ import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
 
 /**
- * Common API for all objects involved in XX model
+ * Common API for all objects involved in a JSON model.
  * 
  * @author sylvain
  *

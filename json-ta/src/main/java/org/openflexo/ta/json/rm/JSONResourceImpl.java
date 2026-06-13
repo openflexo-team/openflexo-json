@@ -207,8 +207,9 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<JSONDocument, 
 		JSONDocument returned = getFactory().makeJSONDocument();
 
 		JsonNode root = getObjectMapper().readTree(ioDelegate.getInputStream());
-		JSONNode rootNode = getFactory().makeJSONNode(root, returned, true);
+		JSONNode rootNode = getFactory().makeJSONNode(root, returned, null, null, true);
 		returned.setRootNode(rootNode);
+		returned.recalculateIndex();
 
 		/*ObjectMapper mapper = new ObjectMapper();
 		

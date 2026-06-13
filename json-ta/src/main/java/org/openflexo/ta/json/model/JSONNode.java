@@ -56,6 +56,7 @@ import org.openflexo.pamela.annotations.PastingPoint;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Remover;
 import org.openflexo.pamela.annotations.Setter;
+import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.pamela.annotations.XMLElement;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -63,7 +64,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Represents a JSON node inside a {@link JSONDocument}
  *
- * @author sylvain
+ * @author sylvain, Chahrazed
  *
  */
 @ModelEntity
@@ -77,6 +78,16 @@ public interface JSONNode extends JSONObject {
     public static final String DOCUMENT_KEY = "document";
     @PropertyIdentifier(type = JsonNode.class)
     public static final String NODE_KEY = "node";
+    @PropertyIdentifier(type = String.class)
+    public static final String URI_KEY = "uri";
+    @PropertyIdentifier(type = String.class)
+    public static final String JSON_POINTER_KEY = "jsonPointer";
+    @PropertyIdentifier(type = String.class)
+    public static final String KEY_KEY = "key";
+    @PropertyIdentifier(type = Integer.class)
+    public static final String INDEX_KEY = "index";
+    @PropertyIdentifier(type = JSONNode.class)
+    public static final String PARENT_KEY = "parent";
 
     /**
      * Return {@link JSONDocument} where this {@link JSONNode} is defined
@@ -116,7 +127,7 @@ public interface JSONNode extends JSONObject {
      *
      * @return
      */
-    @Getter(value = CHILDREN_KEY, cardinality = Cardinality.LIST)
+    @Getter(value = CHILDREN_KEY, cardinality = Cardinality.LIST, inverse = PARENT_KEY)
     @XMLElement
     @Embedded
     @CloningStrategy(StrategyType.CLONE)
@@ -128,6 +139,40 @@ public interface JSONNode extends JSONObject {
 
     @Remover(CHILDREN_KEY)
     public void removeFromChildren(JSONNode aNode);
+
+    @Getter(URI_KEY)
+    @XMLAttribute
+    public String getURI();
+
+    @Setter(URI_KEY)
+    public void setURI(String uri);
+
+    @Getter(JSON_POINTER_KEY)
+    @XMLAttribute
+    public String getJsonPointer();
+
+    @Setter(JSON_POINTER_KEY)
+    public void setJsonPointer(String pointer);
+
+    @Getter(KEY_KEY)
+    @XMLAttribute
+    public String getKey();
+
+    @Setter(KEY_KEY)
+    public void setKey(String key);
+
+    @Getter(INDEX_KEY)
+    @XMLAttribute
+    public Integer getIndex();
+
+    @Setter(INDEX_KEY)
+    public void setIndex(Integer index);
+
+    @Getter(value = PARENT_KEY, inverse = CHILDREN_KEY)
+    public JSONNode getParent();
+
+    @Setter(PARENT_KEY)
+    public void setParent(JSONNode parent);
 
     public JSONNode createNode(String key, Object value);
 
@@ -170,45 +215,19 @@ public interface JSONNode extends JSONObject {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<JSONNode> getChildren() {
-            JsonNode node = getNode();
-
-            if (node == null) {
-                return java.util.Collections.emptyList();
-            }
-
-            List<JSONNode> listChildren = new java.util.ArrayList<>();
-
-            // children are array elements
-            if (node.isArray()) {
-                for (JsonNode element : node) {
-                    listChildren.add(getFactory().makeJSONNode(element, this, false));
-                }
-                return listChildren;
-            }
-
-            // children are values
-            if (node.isObject()) {
-                node.fields().forEachRemaining(entry -> {
-                    listChildren.add(getFactory().makeJSONNode(entry.getValue(), this, false));
-                });
-                return listChildren;
-            }
-
-            // Primitive → no children
-            return java.util.Collections.emptyList();
+            return (List<JSONNode>) performSuperGetter(CHILDREN_KEY);
         }
 
         @Override
         public JSONNode getNodeWithKey(String key) {
             if (key == null || key.isEmpty()) return null;
 
-            JsonNode current = getNode();
-            if (current != null && current.has(key)) {
-                JSONNode valueNode = getFactory().newInstance(JSONNode.class);
-                valueNode.setJSONDocument(getJSONDocument());
-                valueNode.setNode(current.get(key));
-                return valueNode;
+            for (JSONNode child : getChildren()) {
+                if (key.equals(child.getKey())) {
+                    return child;
+                }
             }
 
             for (JSONNode child : getChildren()) {
@@ -217,9 +236,6 @@ public interface JSONNode extends JSONObject {
                     return found;
                 }
             }
-
-            JsonNode jacksonNode = getNode().at("");
-
             return null;
         }
 
@@ -238,27 +254,20 @@ public interface JSONNode extends JSONObject {
                 );
             }
 
-            ObjectMapper mapper = getJSONDocument()
-                    .getResource()
-                    .getObjectMapper();
-
-            JsonNode jsonValue = mapper.valueToTree(value);
-            ((ObjectNode) current).set(key, jsonValue);
+            createNode(key, value);
         }
 
         @Override
         public JSONNode getArrayElementAt(int index) {
             JsonNode n = getNode();
-            if (!n.isArray()) {
+            if (n == null || !n.isArray()) {
                 throw new IllegalStateException("Not an array node");
             }
 
-            JsonNode element = n.get(index);
-            if (element == null) {
+            if (index < 0 || index >= getChildren().size()) {
                 return null;
             }
-
-            return getFactory().makeJSONNode(element, this, false);
+            return getChildren().get(index);
         }
 
 
@@ -288,10 +297,16 @@ public interface JSONNode extends JSONObject {
             JsonNode jsonValue = mapper.valueToTree(content);
 
             ObjectNode objectNode = (ObjectNode) current;
+            JSONNode previous = directChildWithKey(key);
+            if (previous != null) {
+                getJSONDocument().unregisterNodeAndChildren(previous);
+                removeFromChildren(previous);
+            }
             objectNode.set(key, jsonValue);
 
-            JSONNode created = getFactory().makeJSONNode(jsonValue, this, false);
+            JSONNode created = getFactory().makeJSONNode(jsonValue, this, key, null, true);
             addToChildren(created);
+            changed();
 
             return created;
         }
@@ -315,8 +330,14 @@ public interface JSONNode extends JSONObject {
             ObjectNode parent = (ObjectNode) current;
             parent.set(key, objectValue);
 
-            JSONNode created = getFactory().makeJSONNode(objectValue, this, false);
+            JSONNode previous = directChildWithKey(key);
+            if (previous != null) {
+                getJSONDocument().unregisterNodeAndChildren(previous);
+                removeFromChildren(previous);
+            }
+            JSONNode created = getFactory().makeJSONNode(objectValue, this, key, null, true);
             addToChildren(created);
+            changed();
 
             return created;
         }
@@ -340,8 +361,14 @@ public interface JSONNode extends JSONObject {
             ObjectNode parent = (ObjectNode) current;
             parent.set(key, arrayValue);
 
-            JSONNode created = getFactory().makeJSONNode(arrayValue, this, false);
+            JSONNode previous = directChildWithKey(key);
+            if (previous != null) {
+                getJSONDocument().unregisterNodeAndChildren(previous);
+                removeFromChildren(previous);
+            }
+            JSONNode created = getFactory().makeJSONNode(arrayValue, this, key, null, true);
             addToChildren(created);
+            changed();
 
             return created;
         }
@@ -365,8 +392,9 @@ public interface JSONNode extends JSONObject {
             ArrayNode array = (ArrayNode) current;
             array.add(jsonValue);
 
-            JSONNode created = getFactory().makeJSONNode(jsonValue, this, false);
+            JSONNode created = getFactory().makeJSONNode(jsonValue, this, null, array.size() - 1, true);
             addToChildren(created);
+            changed();
 
             return created;
         }
@@ -389,37 +417,42 @@ public interface JSONNode extends JSONObject {
                 );
             }
 
-            JsonNode removed = array.get(index);
+            JSONNode removed = getChildren().get(index);
             array.remove(index);
-
-            getChildren().removeIf(child ->
-                    child.getNode().equals(removed)
-            );
+            getJSONDocument().unregisterNodeAndChildren(removed);
+            removeFromChildren(removed);
+            changed();
         }
 
         @Override
         public JSONNode deleteNode(String key) {
 
-            JSONDocument document = getJSONDocument();
+            if (!(getNode() instanceof ObjectNode)) {
+                throw new IllegalStateException("Cannot delete the node");
+            }
+            JSONNode nodeToDelete = directChildWithKey(key);
+            if (nodeToDelete == null) {
+                return this;
+            }
+            ((ObjectNode) getNode()).remove(key);
+            getJSONDocument().unregisterNodeAndChildren(nodeToDelete);
+            removeFromChildren(nodeToDelete);
+            changed();
+            return this;
+        }
 
-            JSONNode nodeToDelete = this.getNodeWithKey(key);
-
-            ObjectNode root = (ObjectNode) document.getRootNode().getNode();
-            root.remove(key);
-
-
-            JSONNode rootNode = document.getRootNode();
-            rootNode.setNode(root);
-
-
-            for (JSONNode child : rootNode.getChildren()) {
-                if (nodeToDelete.getNode().equals(child.getNode())) {
-                    rootNode.getChildren().remove(child);
-                    break;
+        private JSONNode directChildWithKey(String key) {
+            for (JSONNode child : getChildren()) {
+                if (key.equals(child.getKey())) {
+                    return child;
                 }
             }
+            return null;
+        }
 
-            return rootNode;
+        private void changed() {
+            getJSONDocument().cleanJsonContent();
+            getJSONDocument().recalculateIndex();
         }
 
 

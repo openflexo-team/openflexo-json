@@ -20,8 +20,13 @@ import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONModelSlot;
-import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.model.JSONNode;
+
+/**
+ *
+ *
+ * @author Chahrazed
+ */
 
 @ModelEntity
 @ImplementationClass(AddNode.AddNodeImpl.class)
@@ -52,7 +57,7 @@ public interface AddNode extends JSONAction<JSONNode> {
     @Setter(CONTENT_KEY)
     public void setContent(DataBinding<Object> content);
 
-    public static abstract class AddNodeImpl extends TechnologySpecificActionDefiningReceiverImpl<JSONModelSlot, JSONDocument, JSONNode>
+    public static abstract class AddNodeImpl extends TechnologySpecificActionDefiningReceiverImpl<JSONModelSlot, JSONNode, JSONNode>
             implements AddNode {
 
         private static final Logger logger = Logger.getLogger(AddNode.class.getPackage().getName());
@@ -96,9 +101,11 @@ public interface AddNode extends JSONAction<JSONNode> {
                 );
             }
 
-            JSONDocument resourceData = getReceiver(evaluationContext);
-            // Add the new node to the json document
-            return resourceData.getRootNode().createNode(key, content);
+            JSONNode receiver = getReceiver(evaluationContext);
+            if (receiver == null) {
+                throw new IllegalArgumentException("AddNode: receiver evaluated to null");
+            }
+            return receiver.createNode(key, content);
 
         }
 

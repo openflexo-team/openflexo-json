@@ -56,12 +56,13 @@ import org.openflexo.ta.json.fml.JSONNodeActorReference;
 import org.openflexo.ta.json.fml.JSONNodeRole;
 import org.openflexo.ta.json.fml.editionaction.*;
 import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONNode;
 import org.openflexo.ta.json.rm.JSONResource;
 
 /**
  * Implementation of the {@link ModelSlot} class for the XX technology adapter (plain text connector)
  *
- * @author sylvain
+ * @author sylvain, Chahrazed
  *
  */
 @DeclareFlexoRoles({ JSONNodeRole.class })
@@ -73,6 +74,10 @@ import org.openflexo.ta.json.rm.JSONResource;
 @XMLElement
 @FML("JSONModelSlot")
 public interface JSONModelSlot extends FreeModelSlot<JSONDocument, JSONResource> {
+
+	public String getURIForObject(JSONDocument document, Object object);
+
+	public Object retrieveObjectWithURI(JSONDocument document, String objectURI);
 
 	public static abstract class JSONModelSlotImpl extends FreeModelSlotImpl<JSONDocument, JSONResource> implements JSONModelSlot {
 
@@ -100,6 +105,16 @@ public interface JSONModelSlot extends FreeModelSlot<JSONDocument, JSONResource>
 		@Override
 		public JSONTechnologyAdapter getModelSlotTechnologyAdapter() {
 			return (JSONTechnologyAdapter) super.getModelSlotTechnologyAdapter();
+		}
+
+		@Override
+		public String getURIForObject(JSONDocument document, Object object) {
+			return object instanceof JSONNode ? JSONURIProcessor.getURIForObject(document, (JSONNode) object) : null;
+		}
+
+		@Override
+		public Object retrieveObjectWithURI(JSONDocument document, String objectURI) {
+			return JSONURIProcessor.retrieveObjectWithURI(document, objectURI);
 		}
 
 	}

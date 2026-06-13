@@ -82,7 +82,7 @@ public interface JSONNodeRole extends FlexoRole<JSONNode> {
 
 		@Override
 		public ActorReference<JSONNode> makeActorReference(JSONNode object, FlexoConceptInstance fci) {
-			AbstractVirtualModelInstanceModelFactory<?> factory = fci.getFactory();
+            final AbstractVirtualModelInstanceModelFactory factory = fci.getFactory();
 			JSONNodeActorReference returned = factory.newInstance(JSONNodeActorReference.class);
 			returned.setFlexoRole(this);
 			returned.setFlexoConceptInstance(fci);

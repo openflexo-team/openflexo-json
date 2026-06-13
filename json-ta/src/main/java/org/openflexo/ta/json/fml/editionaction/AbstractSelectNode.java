@@ -40,9 +40,17 @@ package org.openflexo.ta.json.fml.editionaction;
 
 import org.openflexo.foundation.fml.editionaction.AbstractFetchRequest;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
+import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
+import org.openflexo.pamela.annotations.Getter;
+import org.openflexo.pamela.annotations.Setter;
+import org.openflexo.pamela.annotations.PropertyIdentifier;
+import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.ta.json.JSONModelSlot;
+import org.openflexo.ta.json.JSONURIProcessor;
 import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.model.JSONNode;
 
@@ -64,10 +72,21 @@ import java.util.logging.Logger;
 @ImplementationClass(AbstractSelectNode.AbstractSelectNodeImpl.class)
 public interface AbstractSelectNode<AT> extends AbstractFetchRequest<JSONModelSlot, JSONDocument, JSONNode, AT> {
 
+	@PropertyIdentifier(type = DataBinding.class)
+	String URI_KEY = "uri";
+
+	@Getter(URI_KEY)
+	@XMLAttribute
+	DataBinding<String> getURI();
+
+	@Setter(URI_KEY)
+	void setURI(DataBinding<String> uri);
+
 	public static abstract class AbstractSelectNodeImpl<AT>
 			extends AbstractFetchRequestImpl<JSONModelSlot, JSONDocument, JSONNode, AT>implements AbstractSelectNode<AT> {
 
 		private static final Logger logger = Logger.getLogger(AbstractSelectNode.class.getPackage().getName());
+		private DataBinding<String> uri;
 
 		@Override
 		public Type getFetchedType() {
@@ -78,12 +97,47 @@ public interface AbstractSelectNode<AT> extends AbstractFetchRequest<JSONModelSl
 		public List<JSONNode> performExecute(RunTimeEvaluationContext evaluationContext) {
 			JSONDocument jsonDocument = getReceiver(evaluationContext);
 			List<JSONNode> selectedJsonNodes = new ArrayList<>(0);
+			String selectedURI = null;
 
-            JSONNode rootNode = jsonDocument.getRootNode();
-
-			selectedJsonNodes.addAll(rootNode.getChildren());
+			if (getURI().isSet()) {
+				try {
+					selectedURI = getURI().getBindingValue(evaluationContext);
+				}
+				catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
+                    e.printStackTrace();
+				}
+			}
+			if (selectedURI != null) {
+				JSONNode selected = JSONURIProcessor.retrieveObjectWithURI(jsonDocument, selectedURI);
+				if (selected != null) {
+					selectedJsonNodes.add(selected);
+				}
+			}
+			else {
+				selectedJsonNodes.addAll(jsonDocument.getRootNode().getChildren());
+			}
 
 			return selectedJsonNodes;
+		}
+
+		@Override
+		public DataBinding<String> getURI() {
+			if (uri == null) {
+				uri = new DataBinding<>(this, String.class, DataBinding.BindingDefinitionType.GET);
+				uri.setBindingName(URI_KEY);
+			}
+			return uri;
+		}
+
+		@Override
+		public void setURI(DataBinding<String> uri) {
+			if (uri != null) {
+				uri.setOwner(this);
+				uri.setDeclaredType(String.class);
+				uri.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
+				uri.setBindingName(URI_KEY);
+			}
+			this.uri = uri;
 		}
 	}
 }
