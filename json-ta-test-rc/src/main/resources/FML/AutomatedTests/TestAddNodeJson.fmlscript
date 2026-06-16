@@ -1,0 +1,63 @@
+// Initialization
+service ResourceCenterService status;
+resources;
+context;
+
+// Load the JSON Virtual Model
+
+vm = load -r [
+  "http://tuto/TestFMLJSONVM.fml"
+];
+
+assert vm != null;
+log "VirtualModel loaded: " + vm;
+
+// Load the JSON resource (adapt the URI to the JSON file)
+
+jsonResource = load -r [
+  "http://www.openflexo.org/test/json/JSON/ExempleComplex.json"
+];
+
+
+assert jsonResource != null;
+log "JSON Resource loaded: " + jsonResource;
+
+// Instantiate the JsonInstanciateDemo
+service ResourceCenterService add_temp_rc;
+vmi = new TestFMLJSONVM(jsonResource.resource) with (name="JsonInstanciateDemo");
+context;
+assert vmi != null;
+log "VirtualModelInstance created: " + vmi;
+
+// TEST 1:  document
+log " Test document functions";
+log vmi.document.getContents();
+assert vmi.document.getContents() != null;
+
+// TEST 2:  rootNode
+
+log " TEST display rootNode";
+root = vmi.document.rootNode;
+assert root != null;
+
+// Test type of root
+log "Root Jackson node type: " + root.node.getNodeType.toString;
+log "Root content: " + root.node.toString;
+
+// TEST 3: root children
+log "root model :" +root.getNodeWithKey("model").node.toString;
+log " TEST display rootNode.children ";
+log "Children number: " + root.children.size.toString;
+
+//modelRoot = root.getNodeWithKey("model").node;
+//log "Child node element: " + modelRoot.toString;
+
+// TEST 4: access object field
+
+log " TEST display getNodeWithKey ";
+//keyNode = root.getNodeWithKey("model").node;
+
+//assert keyNode != null;
+//log "key: " + keyNode.node.toString;
+
+//document.getRootNode()

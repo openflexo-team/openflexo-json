@@ -6,10 +6,10 @@ import org.openflexo.ta.json.model.JSONNode;
 import java.lang.String;
 
 
-@URI("http://www.openflexo.org/projects/2025/11/JsonProjectTest_1764458135187.prj/JsonVirtuelModelDemo.fml")
+@URI("http://tuto/TestFMLJSONVM.fml")
 
 @Author("chahrazed")
-public model JsonVirtuelModelDemo {
+public model TestFMLJSONVM {
 
    JSONDocument document with JSONModelSlot();
 

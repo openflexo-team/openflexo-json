@@ -1,0 +1,56 @@
+// Load the VirtualModel.
+log "========== CHARGEMENT DU VIRTUAL MODEL PERSON ==========";
+vm = load -r [
+  "http://www.openflexo.org/projects/2025/11/JsonProjectTest_1764458135187.prj/TestPersonRole.fml"
+];
+assert vm != null;
+
+// Load the JSON resource used by the model slot.
+log "========== CHARGEMENT DE LA RESSOURCE PERSON JSON ==========";
+jsonResource = load -r [
+  "http://www.openflexo.org/test/json/JSON/Person.json"
+];
+assert jsonResource != null;
+
+// Create a new VirtualModelInstance connected to Person.json.
+log "========== CREATION DE LA VMI PERSON ==========";
+service ResourceCenterService add_temp_rc;
+vmi = new TestPersonRole(jsonResource.resource) with (name="TestPersonRoleInstance");
+assert vmi != null;
+
+assert vmi.configuration != null;
+assert vmi.documentNode != null;
+assert vmi.nodes != null;
+assert vmi.references != null;
+assert vmi.documentName() == "MyDocument";
+assert vmi.nodes.children.size == 2;
+assert vmi.references.children.size == 1;
+assert vmi.verifySchemaShape() == true;
+
+log "========== TEST ROLE PERSON ==========";
+person = vmi.new PersonNode(0);
+assert person != null;
+assert person.node != null;
+assert person.node.getURI() == "#/nodes/0";
+assert person.matchesPersonType() == true;
+assert person.name() == "John";
+assert person.age() == 30;
+
+log "========== TEST ROLE COMPANY ==========";
+company = vmi.new CompanyNode(1);
+assert company != null;
+assert company.node != null;
+assert company.node.getURI() == "#/nodes/1";
+assert company.matchesCompanyType() == true;
+assert company.name() == "Openflexo";
+
+log "========== TEST ROLE REFERENCE ==========";
+reference = vmi.new WorkReference(0);
+assert reference != null;
+assert reference.node != null;
+assert reference.node.getURI() == "#/references/0";
+assert reference.matchesReferenceType() == true;
+assert reference.source() == "n1";
+assert reference.target() == "n2";
+
+log "========== TEST PERSON ROLE TERMINE AVEC SUCCES ==========";

@@ -6,7 +6,7 @@ context;
 // Load the JSON Virtual Model
 
 vm = load -r [
-  "http://www.openflexo.org/projects/2025/11/JsonProjectTest_1764458135187.prj/JsonVirtuelModelDemo.fml"
+  "http://tuto/TestFMLJSONVM.fml"
 ];
 
 assert vm != null;
@@ -14,9 +14,17 @@ log "VirtualModel loaded: " + vm;
 
 // Load the JSON resource (adapt the URI to the JSON file)
 
-/*jsonResource = load -r [
-  "http://www.openflexo.org/projects/2025/11/JsonProjectTest_1764458135187.prj/sample.json"
+jsonResource = load -r [
+  "http://www.openflexo.org/test/json/JSON/Alice.json"
 ];
+
 
 assert jsonResource != null;
 log "JSON Resource loaded: " + jsonResource;
+
+// Instantiate the JsonInstanciateDemo
+service ResourceCenterService add_temp_rc;
+vmi = new TestFMLJSONVM(jsonResource.resource) with (name="JsonInstanciateDemo");
+context;
+assert vmi != null;
+log "VirtualModelInstance created: " + vmi;

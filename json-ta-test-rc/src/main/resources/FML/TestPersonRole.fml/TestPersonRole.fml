@@ -1,0 +1,179 @@
+use org.openflexo.ta.json.JSONModelSlot as JSON;
+
+import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONNode;
+import java.lang.String;
+import java.lang.Integer;
+
+@URI("http://www.openflexo.org/projects/2025/11/JsonProjectTest_1764458135187.prj/TestPersonRole.fml")
+@Author("chahrazed")
+public model TestPersonRole {
+
+  JSONDocument configModel with JSONModelSlot();
+
+  JSONNode configuration with JSONNodeRole(container=configModel);
+  JSONNode documentNode with JSONNodeRole(container=configModel);
+  JSONNode nodes with JSONNodeRole(container=configModel);
+  JSONNode references with JSONNodeRole(container=configModel);
+
+  create(required Resource<JSONDocument> config) {
+    log "[TestPersonRole] Creation de la VMI";
+    connect configModel using parameters.config;
+
+    configuration = configModel.rootNode;
+    documentNode = configuration.getNodeWithKey("document");
+    nodes = configuration.getNodeWithKey("nodes");
+    references = configuration.getNodeWithKey("references");
+
+    log "[TestPersonRole] Racine URI: " + configuration.getURI();
+    log "[TestPersonRole] document URI: " + documentNode.getURI();
+    log "[TestPersonRole] nodes URI: " + nodes.getURI();
+    log "[TestPersonRole] references URI: " + references.getURI();
+    log "[TestPersonRole] Nom document: " + this.documentName();
+    log "[TestPersonRole] Nombre de nodes: " + nodes.children.size;
+    log "[TestPersonRole] Nombre de references: " + references.children.size;
+  }
+
+  public String documentName() {
+    return documentNode.getNodeWithKey("name").node.asText;
+  }
+
+  public JSONNode personNode() {
+    return nodes.getArrayElementAt(0);
+  }
+
+  public JSONNode companyNode() {
+    return nodes.getArrayElementAt(1);
+  }
+
+  public JSONNode firstReference() {
+    return references.getArrayElementAt(0);
+  }
+
+  public boolean verifyPersonShape() {
+    JSONNode person = this.personNode();
+    return person.getNodeWithKey("type").node.asText == "Person"
+        && person.getNodeWithKey("id").node.asText == "n1"
+        && person.getNodeWithKey("name").node.asText == "John"
+        && person.getNodeWithKey("age").node.asInt == 30;
+  }
+
+  public boolean verifyCompanyShape() {
+    JSONNode company = this.companyNode();
+    return company.getNodeWithKey("type").node.asText == "Company"
+        && company.getNodeWithKey("id").node.asText == "n2"
+        && company.getNodeWithKey("name").node.asText == "Openflexo";
+  }
+
+  public boolean verifyReferenceShape() {
+    JSONNode reference = this.firstReference();
+    return reference.getNodeWithKey("type").node.asText == "worksFor"
+        && reference.getNodeWithKey("source").node.asText == "n1"
+        && reference.getNodeWithKey("target").node.asText == "n2";
+  }
+
+  public boolean verifySchemaShape() {
+    return this.documentName() == "MyDocument"
+        && nodes.node.isArray()
+        && references.node.isArray()
+        && this.verifyPersonShape()
+        && this.verifyCompanyShape()
+        && this.verifyReferenceShape();
+  }
+
+  @Author("chahrazed")
+  concept PersonNode {
+    JSONNode node with JSONNodeRole(container=configModel);
+
+    create(required Integer index) {
+      log "[PersonNode] Creation depuis nodes[" + parameters.index + "]";
+      node = nodes.getArrayElementAt(parameters.index);
+      log "[PersonNode] URI: " + node.getURI();
+      log "[PersonNode] type: " + this.typeName();
+      log "[PersonNode] name: " + this.name();
+      log "[PersonNode] age: " + this.age();
+    }
+
+    public String typeName() {
+      return node.getNodeWithKey("type").node.asText;
+    }
+
+    public String name() {
+      return node.getNodeWithKey("name").node.asText;
+    }
+
+    public Integer age() {
+      return node.getNodeWithKey("age").node.asInt;
+    }
+
+    public boolean matchesPersonType() {
+      return this.typeName() == "Person";
+    }
+
+    delete() {
+      log "[PersonNode] Suppression de l'instance pour " + node.getURI();
+    }
+  }
+
+  @Author("chahrazed")
+  concept CompanyNode {
+    JSONNode node with JSONNodeRole(container=configModel);
+
+    create(required Integer index) {
+      log "[CompanyNode] Creation depuis nodes[" + parameters.index + "]";
+      node = nodes.getArrayElementAt(parameters.index);
+      log "[CompanyNode] URI: " + node.getURI();
+      log "[CompanyNode] type: " + this.typeName();
+      log "[CompanyNode] name: " + this.name();
+    }
+
+    public String typeName() {
+      return node.getNodeWithKey("type").node.asText;
+    }
+
+    public String name() {
+      return node.getNodeWithKey("name").node.asText;
+    }
+
+    public boolean matchesCompanyType() {
+      return this.typeName() == "Company";
+    }
+
+    delete() {
+      log "[CompanyNode] Suppression de l'instance pour " + node.getURI();
+    }
+  }
+
+  @Author("chahrazed")
+  concept WorkReference {
+    JSONNode node with JSONNodeRole(container=configModel);
+
+    create(required Integer index) {
+      log "[WorkReference] Creation depuis references[" + parameters.index + "]";
+      node = references.getArrayElementAt(parameters.index);
+      log "[WorkReference] URI: " + node.getURI();
+      log "[WorkReference] source: " + this.source();
+      log "[WorkReference] target: " + this.target();
+    }
+
+    public String source() {
+      return node.getNodeWithKey("source").node.asText;
+    }
+
+    public String target() {
+      return node.getNodeWithKey("target").node.asText;
+    }
+
+    public boolean matchesReferenceType() {
+      return node.getNodeWithKey("type").node.asText == "worksFor";
+    }
+
+    delete() {
+      log "[WorkReference] Suppression de l'instance pour " + node.getURI();
+    }
+  }
+
+  delete() {
+    log "[TestPersonRole] Suppression de la VMI";
+  }
+}

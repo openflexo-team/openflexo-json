@@ -1,0 +1,35 @@
+log "========== CHARGEMENT DU VIRTUAL MODEL TestPersonTyped ==========";
+vm = load -r [
+  "http://www.openflexo.org/projects/2025/11/JsonProjectTest_1764458135187.prj/TestPersonTyped.fml"
+];
+assert vm != null;
+
+log "========== CHARGEMENT DE Person.json ==========";
+jsonResource = load -r [
+  "http://www.openflexo.org/test/json/JSON/Person.json"
+];
+assert jsonResource != null;
+
+log "========== CREATION DE LA VMI ==========";
+
+service ResourceCenterService add_temp_rc;
+vmi = new TestPersonTyped(jsonResource.resource) with (name="TestPersonTypedInstance");
+assert vmi != null;
+assert vmi.root != null;
+assert vmi.documentName() == "MyDocument";
+vmi.verifyPersonContent();
+assert vmi.nodes().children.size == 2;
+assert vmi.references().children.size == 1;
+
+log "========== INSTANCIATION Person ==========";
+
+john = vmi.new Person(0);
+assert john != null;
+assert john.node.getURI() == "#/nodes/0";
+assert john.jsonType() == "Person";
+assert john.id() == "n1";
+assert john.name() == "John";
+assert john.age() == 30;
+
+
+log "========== TestPersonTyped OK ==========";

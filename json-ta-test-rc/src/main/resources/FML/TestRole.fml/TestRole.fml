@@ -1,0 +1,114 @@
+use org.openflexo.ta.json.JSONModelSlot as JSON;
+import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONNode;
+import java.lang.String;
+import java.lang.Integer;
+
+
+ @Author("chahrazed")
+
+@URI("http://www.openflexo.org/projects/2025/11/JsonProjectTest_1764458135187.prj/TestRole.fml")
+
+model TestRole {
+
+    
+  JSONDocument jsonModel with JSONModelSlot();
+  
+  JSONNode root with JSONNodeRole(container=jsonModel);
+  
+  create(required Resource<JSONDocument> jsonResource) {
+    log "Creation de la VMI";
+    
+    connect jsonModel using parameters.jsonResource;
+    
+    root = jsonModel.rootNode;
+    
+    log "Root URI: " + root.getURI();
+    log "Document name: " + this.documentName();
+    log "Nodes Number: " + this.nodes().children.size;
+    log "References Number: " + this.references().children.size;
+  }
+  
+  public void document() {
+    log root.getNodeWithKey("document").toString;
+  }
+  
+  public JSONNode nodes() {
+    return root.getNodeWithKey("nodes");
+  }
+  
+  public JSONNode references() {
+    return root.getNodeWithKey("references");
+  }
+  
+  public JSONNode nodeAt(int index) {
+    return this.nodes().getArrayElementAt(parameters.index);
+  }
+ 
+  public  String documentName() {
+    return root.getNodeWithKey("name").node.asText;
+    
+  }
+ 
+
+  public void verifyPersonContent() {
+
+     String docName = this.documentName();
+    log " documentName = " + docName;
+    log "nodes is array = " + this.nodes().node.isArray();
+    log "nodes size = " + this.nodes().children.size;
+    log "references is array = " + this.references().node.isArray();
+    log "references size = " + this.references().children.size;
+
+   
+  if (docName == "MyDocumentJsonTest"
+      && this.nodes().node.isArray()
+      && this.nodes().children.size == 2
+      && this.references().node.isArray()
+      && this.references().children.size == 1) {
+    log "[verify Person Content] ==> true";
+  }
+  
+  else {
+   
+    log "[verify Person Content] ==> false";
+    
+  }
+}
+ 
+
+  public concept Person {
+   
+    JSONNode node with JSONNodeRole(container=jsonModel);
+    
+    create(required int index) {
+      
+      node = root.getNodeWithKey("nodes").getArrayElementAt(parameters.index);
+
+      if (node.getNodeWithKey("type").node.asText != "Person") {
+          log "ERREUR: le node selectionne n'est pas une Person " + node.getNodeWithKey("type").node.asText;
+          node = null;
+    return;
+  }
+      
+      log "Person URI: " + node.getURI().toString;
+      log "Person id: " + this.id().toString;
+      log "Person name: " + this.name().toString;
+      log "Person age: " + this.age().toString;
+    }
+    public void id() {
+      log node.getNodeWithKey("id").node.asText;
+    }
+    
+    public void name() {
+      log node.getNodeWithKey("name").node.asText;
+    }
+    
+    public void age() {
+      log node.getNodeWithKey("age").node.asText;
+    }
+
+	delete() {
+	}
+  }
+}

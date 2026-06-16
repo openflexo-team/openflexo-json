@@ -1,0 +1,72 @@
+// Load the VirtualModel.
+log "========== CHARGEMENT DU VIRTUAL MODEL ==========";
+vm = load -r [
+  "http://tuto/CompleteJSONDemo.fml"
+];
+assert vm != null;
+
+// Load the JSON resource used by the model slot.
+log "========== CHARGEMENT DE LA RESSOURCE JSON ==========";
+jsonResource = load -r [
+  "http://www.openflexo.org/test/json/JSON/CompleteDemo.json"
+];
+assert jsonResource != null;
+
+// Create a new VirtualModelInstance connected to CompleteDemo.json.
+log "========== CREATION DE LA VMI ==========";
+service ResourceCenterService add_temp_rc;
+vmi = new CompleteJSONDemo(jsonResource.resource) with (name="CompleteJSONDemoInstance");
+assert vmi != null;
+
+root = vmi.getRoot();
+components = vmi.getComponents();
+assert root != null;
+assert components != null;
+assert components.children.size == 2;
+
+// Select the "components" root key, then its second array element.
+log "========== INSTANCIATION DE JSONManipulation ==========";
+manipulation = vmi.new JSONManipulation("components",1);
+assert manipulation != null;
+assert manipulation.component != null;
+assert manipulation.component.getNodeWithKey("name").node.asText == "Database";
+assert manipulation.componentURI() == "#/components/1";
+
+// Add and delete a primitive property.
+log "========== AJOUT DE LA PROPRIETE status ==========";
+status = manipulation.addStatus("ready");
+assert status != null;
+assert status.key == "status";
+assert status.node.asText == "ready";
+assert manipulation.component.getNodeWithKey("status") == status;
+
+log "========== SUPPRESSION DE LA PROPRIETE status ==========";
+manipulation.deleteStatus();
+assert manipulation.component.getNodeWithKey("status") == null;
+
+// Add and delete a nested JSON object.
+log "========== AJOUT DE L'OBJET configuration ==========";
+configuration = manipulation.addConfiguration();
+assert configuration != null;
+assert configuration.getNodeWithKey("enabled").node.asBoolean == true;
+assert configuration.getNodeWithKey("timeout").node.asInt == 30;
+
+log "========== SUPPRESSION DE L'OBJET configuration ==========";
+manipulation.deleteConfiguration();
+assert manipulation.component.getNodeWithKey("configuration") == null;
+
+// Add and delete an array.
+log "========== AJOUT DU TABLEAU tags ==========";
+tags = manipulation.addTags();
+assert tags != null;
+assert tags.children.size == 2;
+assert tags.getArrayElementAt(0).node.asText == "openflexo";
+assert tags.getArrayElementAt(1).node.asText == "json";
+
+log "========== SUPPRESSION DU TABLEAU tags ==========";
+manipulation.deleteTags();
+assert manipulation.component.getNodeWithKey("tags") == null;
+
+log "========== TEST TERMINE AVEC SUCCES ==========";
+log "JSON manipulation example passed";
+log vmi.jsonContents();

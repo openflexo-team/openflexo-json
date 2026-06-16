@@ -1,0 +1,125 @@
+use org.openflexo.ta.json.JSONModelSlot as JSON;
+
+import org.openflexo.ta.json.model.JSONDocument;
+import org.openflexo.ta.json.model.JSONNode;
+import java.lang.String;
+
+@URI("http://tuto/CompleteJSONDemo.fml")
+@Author("OpenFlexo JSON example")
+public model CompleteJSONDemo {
+
+  // The VirtualModelInstance is connected to an existing JSON resource.
+  JSONDocument document with JSONModelSlot();
+
+  create(required Resource<JSONDocument> jsonResource) {
+    log "[CompleteJSONDemo] Creation de la VirtualModelInstance";
+    log "[CompleteJSONDemo] Ressource JSON: " + parameters.jsonResource;
+    connect document using parameters.jsonResource;
+    log "[CompleteJSONDemo] Document connecte: " + document;
+    log "[CompleteJSONDemo] Contenu initial: " + document.getContents();
+  }
+
+  public JSONNode getRoot() {
+    return document.rootNode;
+  }
+
+  public JSONNode getComponents() {
+    return document.rootNode.getNodeWithKey("components");
+  }
+
+  public JSONNode getComponent(Integer index) {
+    return document.rootNode.getNodeWithKey("components").getArrayElementAt(parameters.index);
+  }
+
+  public String jsonContents() {
+    return document.getContents();
+  }
+
+  /**
+   * The key selects a child of the root object. The index is used only when
+   * that child is an array. Use -1 when the keyed child is not an array.
+   */
+  concept JSONManipulation {
+    JSONNode component;
+
+    create(required String elementKey, required Integer elementIndex) {
+      log "[JSONManipulation] Recherche de la cle: " + parameters.elementKey;
+      JSONNode selectedNode = document.rootNode.getNodeWithKey(parameters.elementKey);
+      log "[JSONManipulation] Noeud trouve pour la cle: " + selectedNode.node.toString;
+
+      if (selectedNode.node.isArray() && parameters.elementIndex >= 0) {
+        log "[JSONManipulation] Le noeud est un tableau, utilisation de l'index: " + parameters.elementIndex;
+        component = selectedNode.getArrayElementAt(parameters.elementIndex);
+      }
+      else {
+        log "[JSONManipulation] Utilisation directe du noeud identifie par la cle";
+        component = selectedNode;
+      }
+
+      log "[JSONManipulation] Element selectionne: " + component.node.toString;
+      log "[JSONManipulation] Key: " + component.key;
+      log "[JSONManipulation] Index: " + component.index;
+      log "[JSONManipulation] URI: " + component.getURI();
+      log "[JSONManipulation] JSON Pointer: " + component.jsonPointer;
+    }
+
+    public JSONNode addStatus(String status) {
+      log "[JSONManipulation.addStatus] Avant: " + component.node.toString;
+      log "[JSONManipulation.addStatus] Valeur ajoutee: " + parameters.status;
+      JSONNode created = component.createNode("status",parameters.status);
+      log "[JSONManipulation.addStatus] Noeud cree, URI=" + created.getURI();
+      log "[JSONManipulation.addStatus] Apres: " + component.node.toString;
+      return created;
+    }
+
+    public void deleteStatus() {
+      log "[JSONManipulation.deleteStatus] Avant: " + component.node.toString;
+      component.deleteNode("status");
+      log "[JSONManipulation.deleteStatus] Apres: " + component.node.toString;
+    }
+
+    public JSONNode addConfiguration() {
+      log "[JSONManipulation.addConfiguration] Avant: " + component.node.toString;
+      JSONNode configuration = component.createObjectNode("configuration");
+      configuration.createNode("enabled",true);
+      configuration.createNode("timeout",30);
+      log "[JSONManipulation.addConfiguration] Objet cree: " + configuration.node.toString;
+      log "[JSONManipulation.addConfiguration] Apres: " + component.node.toString;
+      return configuration;
+    }
+
+    public JSONNode addTags() {
+      log "[JSONManipulation.addTags] Avant: " + component.node.toString;
+      JSONNode tags = component.createArrayNode("tags");
+      tags.addArrayElement("openflexo");
+      tags.addArrayElement("json");
+      log "[JSONManipulation.addTags] Tableau cree: " + tags.node.toString;
+      log "[JSONManipulation.addTags] Apres: " + component.node.toString;
+      return tags;
+    }
+
+    public void deleteConfiguration() {
+      log "[JSONManipulation.deleteConfiguration] Avant: " + component.node.toString;
+      component.deleteNode("configuration");
+      log "[JSONManipulation.deleteConfiguration] Apres: " + component.node.toString;
+    }
+
+    public void deleteTags() {
+      log "[JSONManipulation.deleteTags] Avant: " + component.node.toString;
+      component.deleteNode("tags");
+      log "[JSONManipulation.deleteTags] Apres: " + component.node.toString;
+    }
+
+    public String componentURI() {
+      return component.getURI();
+    }
+
+    delete() {
+      log "[JSONManipulation] Suppression de l'instance pour " + component.getURI();
+    }
+  }
+
+  delete() {
+    log "[CompleteJSONDemo] Suppression de la VirtualModelInstance";
+  }
+}

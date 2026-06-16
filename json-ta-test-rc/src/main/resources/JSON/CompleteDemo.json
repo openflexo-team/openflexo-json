@@ -1,0 +1,19 @@
+{
+  "name": "OpenFlexo JSON demo",
+  "metadata": {
+    "version": "1.0",
+    "active": true
+  },
+  "components": [
+    {
+      "id": "component-a",
+      "name": "API",
+      "type": "service"
+    },
+    {
+      "id": "component-b",
+      "name": "Database",
+      "type": "storage"
+    }
+  ]
+}
