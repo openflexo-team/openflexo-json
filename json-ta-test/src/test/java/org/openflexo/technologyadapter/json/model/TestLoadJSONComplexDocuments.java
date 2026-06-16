@@ -186,6 +186,71 @@ public class TestLoadJSONComplexDocuments extends AbstractJSONTest {
 
 
     }
+
+    @Test
+    @TestOrder(4)
+    public void testStableIdentityAndObjectLocations() {
+        JSONDocument document = getJSONDocument("ExempleComplex.json");
+        JSONNode components = document.getRootNode().getNodeWithKey("components");
+        JSONNode firstComponent = components.getArrayElementAt(0);
+        JSONNode componentName = firstComponent.getNodeWithKey("name");
+
+        assertSame(components, document.getRootNode().getNodeWithKey("components"));
+        assertSame(firstComponent, components.getArrayElementAt(0));
+        assertSame(componentName, document.getNodeByURI(componentName.getURI()));
+        assertEquals("components", components.getKey());
+        assertEquals(Integer.valueOf(0), firstComponent.getIndex());
+        assertEquals("name", componentName.getKey());
+        assertSame(firstComponent, componentName.getParent());
+        assertEquals("/components/0/name", componentName.getJsonPointer());
+
+        assertNull(document.getRootNode().getKey());
+        assertNull(document.getRootNode().getIndex());
+        assertLocationSemantics(document.getRootNode());
+    }
+
+    private void assertLocationSemantics(JSONNode parent) {
+        for (JSONNode child : parent.getChildren()) {
+            if (parent.getNode().isObject()) {
+                assertNotNull("An object child must have a key", child.getKey());
+                assertNull("An object child must not have an index", child.getIndex());
+            }
+            else if (parent.getNode().isArray()) {
+                assertNull("An array child must not have a key", child.getKey());
+                assertNotNull("An array child must have an index", child.getIndex());
+            }
+            else {
+                fail("A primitive JSON node cannot have children");
+            }
+            assertLocationSemantics(child);
+        }
+    }
+
+    @Test
+    @TestOrder(5)
+    public void testMutationsKeepWrappersAndSerializationInSync() {
+        JSONDocument document = getJSONDocument("ExempleComplex.json");
+        JSONNode components = document.getRootNode().getNodeWithKey("components");
+        JSONNode secondComponent = components.getArrayElementAt(1);
+        String originalURI = secondComponent.getURI();
+
+        document.getContents();
+        components.removeArrayElement(0);
+
+        assertSame(secondComponent, components.getArrayElementAt(0));
+        assertEquals(Integer.valueOf(0), secondComponent.getIndex());
+        assertEquals("/components/0", secondComponent.getJsonPointer());
+        assertEquals("#/components/1", originalURI);
+        assertEquals("#/components/0", secondComponent.getURI());
+        assertSame(secondComponent, document.getNodeByURI(secondComponent.getURI()));
+
+        JSONNode added = secondComponent.createNode("status", "active");
+        assertSame(added, secondComponent.getNodeWithKey("status"));
+        assertEquals("status", added.getKey());
+        assertTrue(document.getContents().contains("\"status\" : \"active\""));
+
+        secondComponent.deleteNode("status");
+        assertNull(secondComponent.getNodeWithKey("status"));
+        assertFalse(document.getContents().contains("\"status\" : \"active\""));
+    }
 }
-
-

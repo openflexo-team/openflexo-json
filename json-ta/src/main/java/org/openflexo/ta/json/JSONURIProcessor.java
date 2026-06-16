@@ -19,10 +19,31 @@ public final class JSONURIProcessor {
 
     public static String computePointer(JSONObject parent, String key, Integer index) {
         if (!(parent instanceof JSONNode)) {
+            if (key != null || index != null) {
+                throw new IllegalArgumentException("The JSON root cannot have a key or an index");
+            }
             return "";
         }
-        String parentPointer = ((JSONNode) parent).getJsonPointer();
-        String token = key != null ? escape(key) : String.valueOf(index);
+
+        JSONNode parentNode = (JSONNode) parent;
+        String token;
+        if (parentNode.getNode().isObject()) {
+            if (key == null || index != null) {
+                throw new IllegalArgumentException("A child of a JSON object must have a key and no index");
+            }
+            token = escape(key);
+        }
+        else if (parentNode.getNode().isArray()) {
+            if (key != null || index == null || index < 0) {
+                throw new IllegalArgumentException("A child of a JSON array must have a non-negative index and no key");
+            }
+            token = String.valueOf(index);
+        }
+        else {
+            throw new IllegalArgumentException("A primitive JSON node cannot have children");
+        }
+
+        String parentPointer = parentNode.getJsonPointer();
         return (parentPointer != null ? parentPointer : "") + "/" + token;
     }
 
@@ -69,8 +90,8 @@ public final class JSONURIProcessor {
             child.setParent(node);
             String childKey = node.getNode().isObject() ? child.getKey() : null;
             Integer arrayIndex = node.getNode().isArray() ? childIndex : null;
-            String token = childKey != null ? escape(childKey) : String.valueOf(arrayIndex);
-            updateSubtree(document, child, pointer + "/" + token, childKey, arrayIndex);
+            String childPointer = computePointer(node, childKey, arrayIndex);
+            updateSubtree(document, child, childPointer, childKey, arrayIndex);
             childIndex++;
         }
     }

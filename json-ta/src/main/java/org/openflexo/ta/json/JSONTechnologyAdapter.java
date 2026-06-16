@@ -40,11 +40,19 @@ package org.openflexo.ta.json;
 
 import java.util.logging.Logger;
 
+import org.openflexo.foundation.fml.FMLCompilationUnit;
+import org.openflexo.foundation.fml.TechnologySpecificType;
 import org.openflexo.foundation.fml.annotations.DeclareModelSlots;
 import org.openflexo.foundation.fml.annotations.DeclareResourceFactories;
+import org.openflexo.foundation.fml.annotations.DeclareTechnologySpecificTypes;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
+import org.openflexo.foundation.resource.FlexoResourceCenterService;
+import org.openflexo.foundation.technologyadapter.SpecificTypeInfo;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
+import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
+import org.openflexo.ta.json.JSONIndividualType.JSONIndividualTypeFactory;
 import org.openflexo.ta.json.fml.binding.JSONBindingFactory;
+import org.openflexo.ta.json.metamodel.JSONSchemaType;
 import org.openflexo.ta.json.rm.JSONResourceFactory;
 import org.openflexo.ta.json.rm.JSONResourceRepository;
 
@@ -55,8 +63,7 @@ import org.openflexo.ta.json.rm.JSONResourceRepository;
  * 
  */
 @DeclareModelSlots({ JSONModelSlot.class })
-// You might declare your own types here
-// @DeclareTechnologySpecificTypes({ YourCustomType.class })
+@DeclareTechnologySpecificTypes({ JSONIndividualType.class })
 @DeclareResourceFactories({ JSONResourceFactory.class })
 public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapter> {
 
@@ -88,6 +95,16 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 	}
 
 	@Override
+	public JSONTechnologyContextManager createTechnologyContextManager(FlexoResourceCenterService service) {
+		return new JSONTechnologyContextManager(this, service);
+	}
+
+	@Override
+	public JSONTechnologyContextManager getTechnologyContextManager() {
+		return (JSONTechnologyContextManager) super.getTechnologyContextManager();
+	}
+
+	@Override
 	public JSONBindingFactory getTechnologyAdapterBindingFactory() {
 		return BINDING_FACTORY;
 	}
@@ -99,6 +116,58 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 
 	public JSONResourceFactory getJSONResourceFactory() {
 		return getResourceFactory(JSONResourceFactory.class);
+	}
+
+	@Override
+	public void initTechnologySpecificTypes(TechnologyAdapterService taService) {
+		taService.registerTypeClass(JSONIndividualType.class, getJSONIndividualTypeFactory());
+	}
+
+	private JSONIndividualTypeFactory jsonIndividualTypeFactory;
+
+	public JSONIndividualTypeFactory getJSONIndividualTypeFactory() {
+		if (jsonIndividualTypeFactory == null) {
+			jsonIndividualTypeFactory = new JSONIndividualTypeFactory(this);
+		}
+		return jsonIndividualTypeFactory;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends TechnologySpecificType<JSONTechnologyAdapter>> T instantiateType(
+			SpecificTypeInfo<JSONTechnologyAdapter> specificTypeInfo) {
+		T returned = null;
+		if (specificTypeInfo.getTechnologySpecificTypeClass().equals(JSONIndividualType.class)) {
+			if (specificTypeInfo.getParameter(JSONIndividualType.SCHEMA_TYPE) != null) {
+				JSONSchemaType schemaType = (JSONSchemaType) specificTypeInfo.getParameter(JSONIndividualType.SCHEMA_TYPE);
+				returned = (T) getJSONIndividualTypeFactory().getIndividualOfType(schemaType);
+			}
+			else {
+				returned = (T) JSONIndividualType.UNDEFINED_JSON_INDIVIDUAL_TYPE;
+			}
+		}
+		if (returned != null) {
+			returned.registerSpecificTypeInfo(specificTypeInfo);
+			return returned;
+		}
+		return null;
+	}
+
+	@Override
+	public String serializeType(TechnologySpecificType<JSONTechnologyAdapter> type, FMLCompilationUnit compilationUnit,
+			boolean useTypeDefinitions) {
+		if (type instanceof JSONIndividualType) {
+			JSONIndividualType individualType = (JSONIndividualType) type;
+			if (useTypeDefinitions && compilationUnit.getTypeDeclaration(type) != null) {
+				return compilationUnit.getTypeDeclaration(type).getAbbrev();
+			}
+			if (individualType.getSchemaType() != null) {
+				JSONSchemaType schemaType = individualType.getSchemaType();
+				return "JSONIndividualType(" + JSONIndividualType.SCHEMA_TYPE + "=" + schemaType.getURI() + ")";
+			}
+			return "JSONIndividualType()";
+		}
+		return super.serializeType(type, compilationUnit, useTypeDefinitions);
 	}
 
 	@SuppressWarnings("unchecked")

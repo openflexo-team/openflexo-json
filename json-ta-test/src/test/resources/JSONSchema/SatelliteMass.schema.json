@@ -1,0 +1,43 @@
+{
+  "$id": "SatelliteMassSchema",
+  "title": "SatelliteMass",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "components",
+    "calculated_total_mass_kg"
+  ],
+  "properties": {
+    "components": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Component"
+      }
+    },
+    "calculated_total_mass_kg": {
+      "type": "number"
+    }
+  },
+  "definitions": {
+    "Component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "quantity",
+        "mass_kg_per_unit"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "mass_kg_per_unit": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
