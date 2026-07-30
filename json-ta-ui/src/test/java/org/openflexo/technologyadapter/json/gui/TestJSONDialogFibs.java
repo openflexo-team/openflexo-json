@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.technologyadapter.xx.gui;
+package org.openflexo.technologyadapter.json.gui;
 
 import org.openflexo.gina.test.GenericFIBTestCase;
 import org.openflexo.rm.FileResourceImpl;
@@ -51,7 +51,7 @@ import org.openflexo.rm.ResourceLocator;
  * @author sylvain
  *
  */
-public class TestXXDialogFibs extends GenericFIBTestCase {
+public class TestJSONDialogFibs extends GenericFIBTestCase {
 
 	/*
 	 * Use this method to print all
