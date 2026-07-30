@@ -14,7 +14,10 @@ assert jsonResource != null;
 
 // Create a new VirtualModelInstance connected to Person.json.
 log "========== CREATION DE LA VMI PERSON ==========";
+// Automated tests use a temporary resource center. A VMI created here is not
+// meant to be found after restarting OpenFlexo.
 service ResourceCenterService add_temp_rc;
+log "WARNING: VMI creee dans un ResourceCenter temporaire pour le test";
 vmi = new TestPersonRole(jsonResource.resource) with (name="TestPersonRoleInstance");
 assert vmi != null;
 

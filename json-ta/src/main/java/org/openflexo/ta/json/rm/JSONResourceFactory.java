@@ -74,8 +74,8 @@ public class JSONResourceFactory
 
 	@Override
 	public <I> boolean isValidArtefact(I serializationArtefact, FlexoResourceCenter<I> resourceCenter) {
-		return (resourceCenter.retrieveName(serializationArtefact).endsWith(JSON_FILE_EXTENSION))
-				&& !(resourceCenter.retrieveName(serializationArtefact).startsWith("~"));
+		String name = resourceCenter.retrieveName(serializationArtefact);
+		return name.endsWith(JSON_FILE_EXTENSION) && !name.startsWith("~") && !JSONSchemaResourceFactory.isJSONSchemaFileName(name);
 	}
 
 	@Override

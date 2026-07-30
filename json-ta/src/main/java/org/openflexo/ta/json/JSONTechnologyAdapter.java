@@ -55,6 +55,9 @@ import org.openflexo.ta.json.fml.binding.JSONBindingFactory;
 import org.openflexo.ta.json.metamodel.JSONSchemaType;
 import org.openflexo.ta.json.rm.JSONResourceFactory;
 import org.openflexo.ta.json.rm.JSONResourceRepository;
+import org.openflexo.ta.json.rm.JSONSchemaResourceFactory;
+import org.openflexo.ta.json.rm.JSONSchemaResourceRepository;
+import org.openflexo.ta.json.validation.JSONSchemaValidationService;
 
 /**
  * Technology adapter exposing JSON documents and stable JSON node objects.
@@ -62,15 +65,16 @@ import org.openflexo.ta.json.rm.JSONResourceRepository;
  * @author sylvain, Chahrazed
  * 
  */
-@DeclareModelSlots({ JSONModelSlot.class })
+@DeclareModelSlots({ JSONModelSlot.class, JSONTypedModelSlot.class })
 @DeclareTechnologySpecificTypes({ JSONIndividualType.class })
-@DeclareResourceFactories({ JSONResourceFactory.class })
+@DeclareResourceFactories({ JSONSchemaResourceFactory.class, JSONResourceFactory.class })
 public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapter> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(JSONTechnologyAdapter.class.getPackage().getName());
 
 	private static final JSONBindingFactory BINDING_FACTORY = new JSONBindingFactory();
+	private final JSONSchemaValidationService validationService = new JSONSchemaValidationService();
 
 	@Override
 	public String getName() {
@@ -85,6 +89,7 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 	@Override
 	public void ensureAllRepositoriesAreCreated(FlexoResourceCenter<?> rc) {
 		super.ensureAllRepositoriesAreCreated(rc);
+		getJSONSchemaResourceRepository(rc);
 		getJSONResourceRepository(rc);
 
 	}
@@ -109,6 +114,10 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 		return BINDING_FACTORY;
 	}
 
+	public JSONSchemaValidationService getJSONSchemaValidationService() {
+		return validationService;
+	}
+
 	@Override
 	public String getIdentifier() {
 		return "JSON";
@@ -116,6 +125,10 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 
 	public JSONResourceFactory getJSONResourceFactory() {
 		return getResourceFactory(JSONResourceFactory.class);
+	}
+
+	public JSONSchemaResourceFactory getJSONSchemaResourceFactory() {
+		return getResourceFactory(JSONSchemaResourceFactory.class);
 	}
 
 	@Override
@@ -176,6 +189,16 @@ public class JSONTechnologyAdapter extends TechnologyAdapter<JSONTechnologyAdapt
 		if (returned == null) {
 			returned = JSONResourceRepository.instanciateNewRepository(this, resourceCenter);
 			resourceCenter.registerRepository(returned, JSONResourceRepository.class, this);
+		}
+		return returned;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <I> JSONSchemaResourceRepository<I> getJSONSchemaResourceRepository(FlexoResourceCenter<I> resourceCenter) {
+		JSONSchemaResourceRepository<I> returned = resourceCenter.retrieveRepository(JSONSchemaResourceRepository.class, this);
+		if (returned == null) {
+			returned = JSONSchemaResourceRepository.instanciateNewRepository(this, resourceCenter);
+			resourceCenter.registerRepository(returned, JSONSchemaResourceRepository.class, this);
 		}
 		return returned;
 	}

@@ -55,6 +55,9 @@ import org.openflexo.foundation.resource.ResourceData;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.foundation.resource.SaveResourceException;
 import org.openflexo.foundation.resource.StreamIODelegate;
+import org.openflexo.foundation.technologyadapter.FlexoMetaModelResource;
+import org.openflexo.ta.json.JSONTechnologyAdapter;
+import org.openflexo.ta.json.metamodel.JSONSchemaDocument;
 import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.model.JSONModelFactory;
 import org.openflexo.ta.json.model.JSONNode;
@@ -92,6 +95,27 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<JSONDocument, 
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public JSONDocument getModelData() {
+		return getJSONDocument();
+	}
+
+	@Override
+	public JSONDocument getModel() {
+		return getJSONDocument();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public FlexoMetaModelResource<JSONDocument, JSONSchemaDocument, JSONTechnologyAdapter> getMetaModelResource() {
+		return (FlexoMetaModelResource<JSONDocument, JSONSchemaDocument, JSONTechnologyAdapter>) performSuperGetter(META_MODEL_RESOURCE);
+	}
+
+	@Override
+	public void setMetaModelResource(FlexoMetaModelResource<JSONDocument, JSONSchemaDocument, JSONTechnologyAdapter> metaModelResource) {
+		performSuperSetter(META_MODEL_RESOURCE, metaModelResource);
 	}
 
 	@Override
@@ -210,6 +234,9 @@ public abstract class JSONResourceImpl extends PamelaResourceImpl<JSONDocument, 
 		JSONNode rootNode = getFactory().makeJSONNode(root, returned, null, null, true);
 		returned.setRootNode(rootNode);
 		returned.recalculateIndex();
+		if (getMetaModelResource() != null) {
+			returned.setMetaModel(getMetaModelResource().getMetaModelData());
+		}
 
 		/*ObjectMapper mapper = new ObjectMapper();
 		

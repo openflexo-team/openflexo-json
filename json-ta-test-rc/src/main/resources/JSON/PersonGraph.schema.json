@@ -1,0 +1,114 @@
+{
+  "$id": "PersonGraphSchema",
+  "title": "PersonGraph",
+  "type": "object",
+  "required": [
+    "document",
+    "nodes",
+    "references"
+  ],
+  "properties": {
+    "document": {
+      "$ref": "#/definitions/Document"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/Person"
+          },
+          {
+            "$ref": "#/definitions/Company"
+          }
+        ]
+      }
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Reference"
+      }
+    }
+  },
+  "definitions": {
+    "Document": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Person": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "name",
+        "age"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "Person"
+        },
+        "name": {
+          "type": "string"
+        },
+        "age": {
+          "type": "integer"
+        }
+      }
+    },
+    "Company": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "Company"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Reference": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "source",
+        "target"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

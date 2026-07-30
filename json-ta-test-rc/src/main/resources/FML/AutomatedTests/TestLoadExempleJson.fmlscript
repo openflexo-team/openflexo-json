@@ -23,7 +23,10 @@ assert jsonResource != null;
 log "JSON Resource loaded: " + jsonResource;
 
 // Instantiate the JsonInstanciateDemo
+// Automated tests use a temporary resource center. A VMI created here is not
+// meant to be found after restarting OpenFlexo.
 service ResourceCenterService add_temp_rc;
+log "WARNING: VMI creee dans un ResourceCenter temporaire pour le test";
 vmi = new TestFMLJSONVM(jsonResource.resource) with (name="JsonInstanciateDemo");
 context;
 assert vmi != null;

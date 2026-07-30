@@ -43,6 +43,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.openflexo.foundation.resource.ResourceData;
+import org.openflexo.foundation.technologyadapter.FlexoModel;
+import org.openflexo.foundation.technologyadapter.TechnologyObject;
 import org.openflexo.pamela.annotations.CloningStrategy;
 import org.openflexo.pamela.annotations.CloningStrategy.StrategyType;
 import org.openflexo.pamela.annotations.Embedded;
@@ -51,7 +53,9 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
+import org.openflexo.ta.json.JSONTechnologyAdapter;
 import org.openflexo.ta.json.JSONURIProcessor;
+import org.openflexo.ta.json.metamodel.JSONSchemaDocument;
 import org.openflexo.ta.json.rm.JSONResource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -65,7 +69,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  */
 @ModelEntity
 @ImplementationClass(value = JSONDocument.JSONDocumentImpl.class)
-public interface JSONDocument extends JSONObject, ResourceData<JSONDocument> {
+public interface JSONDocument extends JSONObject, FlexoModel<JSONDocument, JSONSchemaDocument>, TechnologyObject<JSONTechnologyAdapter>,
+		ResourceData<JSONDocument> {
 
 	@PropertyIdentifier(type = JSONNode.class)
 	public static final String ROOT_NODE_KEY = "rootNode";
@@ -100,6 +105,8 @@ public interface JSONDocument extends JSONObject, ResourceData<JSONDocument> {
 
 	public void cleanJsonContent();
 
+	public void setMetaModel(JSONSchemaDocument metaModel);
+
 	@Override
 	public JSONResource getResource();
 
@@ -132,6 +139,36 @@ public interface JSONDocument extends JSONObject, ResourceData<JSONDocument> {
 		@Override
 		public JSONResource getResource() {
 			return (JSONResource) performSuperGetter(FLEXO_RESOURCE);
+		}
+
+		@Override
+		public String getURI() {
+			return getResource() != null ? getResource().getURI() : null;
+		}
+
+		@Override
+		public JSONSchemaDocument getMetaModel() {
+			if (getResource() != null && getResource().getMetaModelResource() != null) {
+				return getResource().getMetaModelResource().getMetaModelData();
+			}
+			return null;
+		}
+
+		@Override
+		public void setMetaModel(JSONSchemaDocument metaModel) {
+			if (getResource() != null) {
+				getResource().setMetaModelResource(metaModel != null ? metaModel.getResource() : null);
+			}
+		}
+
+		@Override
+		public JSONTechnologyAdapter getTechnologyAdapter() {
+			return getResource() != null ? getResource().getTechnologyAdapter() : null;
+		}
+
+		@Override
+		public Object getObject(String objectURI) {
+			return JSONURIProcessor.retrieveObjectWithURI(this, objectURI);
 		}
 
 		@Override

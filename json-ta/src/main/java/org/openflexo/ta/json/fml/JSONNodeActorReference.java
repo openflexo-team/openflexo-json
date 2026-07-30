@@ -44,8 +44,10 @@ import java.util.logging.Logger;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.rt.ActorReference;
-import org.openflexo.foundation.fml.rt.FreeModelSlotInstance;
+import org.openflexo.foundation.fml.rt.ModelSlotInstance;
+import org.openflexo.foundation.fml.rt.ResourceBasedModelSlotInstance;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
+import org.openflexo.foundation.technologyadapter.ModelSlot;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.ImplementationClass;
@@ -58,6 +60,7 @@ import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.model.JSONNode;
 import org.openflexo.ta.json.rm.JSONResource;
 import org.openflexo.ta.json.JSONModelSlot;
+import org.openflexo.ta.json.JSONTypedModelSlot;
 
 /**
  * Implements {@link ActorReference} for {@link JSONNode} object
@@ -89,6 +92,9 @@ public interface JSONNodeActorReference extends ActorReference<JSONNode> {
 		private String objectURI;
 
 		public JSONDocument getJSONDocument() {
+			if (getModelSlotInstance() != null && getModelSlotInstance().getAccessedResourceData() instanceof JSONDocument) {
+				return (JSONDocument) getModelSlotInstance().getAccessedResourceData();
+			}
 			if (getJSONResource() != null) {
 				try {
 					return getJSONResource().getResourceData();
@@ -104,9 +110,10 @@ public interface JSONNodeActorReference extends ActorReference<JSONNode> {
 		}
 
 		public JSONResource getJSONResource() {
-			FreeModelSlotInstance<?, ?, ?> msInstance = (FreeModelSlotInstance<?, ?, ?>) getModelSlotInstance();
-			if (msInstance != null && msInstance.getResource() instanceof JSONResource) {
-				return (JSONResource) msInstance.getResource();
+			ModelSlotInstance<?, ?> msInstance = getModelSlotInstance();
+			if (msInstance instanceof ResourceBasedModelSlotInstance
+					&& ((ResourceBasedModelSlotInstance<?, ?, ?>) msInstance).getResource() instanceof JSONResource) {
+				return (JSONResource) ((ResourceBasedModelSlotInstance<?, ?, ?>) msInstance).getResource();
 			}
 			return null;
 		}
@@ -115,9 +122,14 @@ public interface JSONNodeActorReference extends ActorReference<JSONNode> {
 		public JSONNode getModellingElement(boolean forceLoading) {
 			if (object == null && objectURI != null && getModelSlotInstance() != null) {
 				JSONDocument document = getJSONDocument();
-				if (document != null && getModelSlotInstance().getModelSlot() instanceof JSONModelSlot) {
-					object = (JSONNode) ((JSONModelSlot) getModelSlotInstance().getModelSlot())
-							.retrieveObjectWithURI(document, objectURI);
+				if (document != null) {
+					object = retrieveObjectWithURI(document, objectURI);
+				}
+			}
+			if (object == null && objectURI == null && "root".equals(getRoleName())) {
+				JSONDocument document = getJSONDocument();
+				if (document != null) {
+					object = document.getRootNode();
 				}
 			}
 			if (object == null) {
@@ -130,19 +142,15 @@ public interface JSONNodeActorReference extends ActorReference<JSONNode> {
 		@Override
 		public void setModellingElement(JSONNode object) {
 			this.object = object;
-			if (object != null && getModelSlotInstance() != null
-					&& getModelSlotInstance().getModelSlot() instanceof JSONModelSlot) {
-				objectURI = ((JSONModelSlot) getModelSlotInstance().getModelSlot())
-						.getURIForObject(object.getJSONDocument(), object);
+			if (object != null && getModelSlotInstance() != null) {
+				objectURI = getURIForObject(object.getJSONDocument(), object);
 			}
 		}
 
 		@Override
 		public String getObjectURI() {
-			if (object != null && getModelSlotInstance() != null
-					&& getModelSlotInstance().getModelSlot() instanceof JSONModelSlot) {
-				objectURI = ((JSONModelSlot) getModelSlotInstance().getModelSlot())
-						.getURIForObject(object.getJSONDocument(), object);
+			if (object != null && getModelSlotInstance() != null) {
+				objectURI = getURIForObject(object.getJSONDocument(), object);
 			}
 			return objectURI;
 		}
@@ -150,6 +158,28 @@ public interface JSONNodeActorReference extends ActorReference<JSONNode> {
 		@Override
 		public void setObjectURI(String objectURI) {
 			this.objectURI = objectURI;
+		}
+
+		private String getURIForObject(JSONDocument document, JSONNode node) {
+			ModelSlot<?, ?> modelSlot = getModelSlotInstance() != null ? getModelSlotInstance().getModelSlot() : null;
+			if (modelSlot instanceof JSONModelSlot) {
+				return ((JSONModelSlot) modelSlot).getURIForObject(document, node);
+			}
+			if (modelSlot instanceof JSONTypedModelSlot) {
+				return ((JSONTypedModelSlot) modelSlot).getURIForObject(document, node);
+			}
+			return null;
+		}
+
+		private JSONNode retrieveObjectWithURI(JSONDocument document, String uri) {
+			ModelSlot<?, ?> modelSlot = getModelSlotInstance() != null ? getModelSlotInstance().getModelSlot() : null;
+			if (modelSlot instanceof JSONModelSlot) {
+				return (JSONNode) ((JSONModelSlot) modelSlot).retrieveObjectWithURI(document, uri);
+			}
+			if (modelSlot instanceof JSONTypedModelSlot) {
+				return (JSONNode) ((JSONTypedModelSlot) modelSlot).retrieveObjectWithURI(document, uri);
+			}
+			return null;
 		}
 
 	}

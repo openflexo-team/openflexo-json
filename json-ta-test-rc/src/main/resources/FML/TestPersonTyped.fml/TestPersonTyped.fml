@@ -1,113 +1,115 @@
-use org.openflexo.ta.json.JSONModelSlot as JSON;
+use org.openflexo.ta.json.JSONTypedModelSlot as JSON;
 
 import org.openflexo.ta.json.model.JSONDocument;
 import org.openflexo.ta.json.model.JSONNode;
+import org.openflexo.ta.json.metamodel.JSONSchemaDocument;
+import org.openflexo.ta.json.metamodel.JSONSchemaType;
+
 import java.lang.String;
 import java.lang.Integer;
+
+import JSONSchemaDocument PERSON_SCHEMA from ["http://www.openflexo.org/test/json/JSON/PersonGraph.schema.json"];
+
+import JSONSchemaType PERSON_TYPE from [PERSON_SCHEMA:"Person"];
+import JSONSchemaType COMPANY_TYPE from [PERSON_SCHEMA:"Company"];
+
+typedef JSONIndividualType(schemaType=PERSON_TYPE) as Person;
+typedef JSONIndividualType(schemaType=COMPANY_TYPE) as Company;
 
 @URI("http://www.openflexo.org/projects/2025/11/JsonProjectTest_1764458135187.prj/TestPersonTyped.fml")
 @Author("chahrazed")
 public model TestPersonTyped {
 
-  JSONDocument jsonModel with JSONModelSlot();
+  JSONDocument jsonModel with JSONTypedModelSlot(metaModel=PERSON_SCHEMA);
 
   JSONNode root with JSONNodeRole(container=jsonModel);
 
   create(required Resource<JSONDocument> jsonResource) {
-    log "Creation de la VMI";
+    log "[TestPersonTyped] Creation de la VMI";
 
     connect jsonModel using parameters.jsonResource;
     root = jsonModel.rootNode;
 
-    log "Root URI: " + root.getURI();
-    log "Document name: " + this.documentName();
-    log "Nodes Number: " + this.nodes().children.size;
-    log "References Number: " + this.references().children.size;
+    log "[TestPersonTyped] Root URI: " + root.getURI();
   }
 
-  public void document() {
-    log root.getNodeWithKey("document").node.toString;
+  public void documentNodeString() {
+    log root.getNodeWithKey("document").toString;
   }
 
   public JSONNode nodes() {
     return root.getNodeWithKey("nodes");
   }
 
+  public JSONNode documentNode() {
+    return root.getNodeWithKey("document");
+  }
+
+  public String documentName() {
+    return this.documentNode().getNodeWithKey("name").node.asText;
+  }
+
   public JSONNode references() {
     return root.getNodeWithKey("references");
   }
 
-  public JSONNode nodeAt(Integer index) {
+  public void printNodes() {
+    log "[TestPersonTyped] Document name: " + this.documentName();
+    log "[TestPersonTyped] Nodes size: " + this.nodes().children.size;
+    log "[TestPersonTyped] References size: " + this.references().children.size;
+  }
+
+  public JSONNode nodeAt(int index) {
     return this.nodes().getArrayElementAt(parameters.index);
   }
 
-  public String documentName() {
-    return root.getNodeWithKey("document").getNodeWithKey("name").node.asText;
+  public JSONNode findNodeByName(String name) {
+    for (JSONNode candidate : this.nodes().children) {
+      if (candidate.getNodeWithKey("name").node.asText == parameters.name) {
+        return candidate;
+      }
+    }
+    return null;
   }
 
-  public void verifyPersonContent() {
-    String docName = this.documentName();
-
-    log "documentName = " + docName;
-    log "documentName OK = " + (docName == "MyDocument");
-    log "nodes is array = " + this.nodes().node.isArray();
-    log "nodes size = " + this.nodes().children.size;
-    log "references is array = " + this.references().node.isArray();
-    log "references size = " + this.references().children.size;
-
-    if (docName == "MyDocument"
-        && this.nodes().node.isArray()
-        && this.nodes().children.size == 2
-        && this.references().node.isArray()
-        && this.references().children.size == 1) {
-      log "[verify Person Content] ==> true";
-    }
-    else {
-      log "[verify Person Content] ==> false";
-    }
+  delete() {
   }
 
-  public concept Person {
+  public concept PersonConcept {
 
-    JSONNode node with JSONNodeRole(container=jsonModel);
+    Person person with JSONIndividualRole(container=jsonModel, schemaType=PERSON_TYPE);
 
-    create(required Integer index) {
-      log "Creation depuis nodes[" + parameters.index + "]";
+    create(required String name) {
+      log "[PersonConcept] Recherche Person name=" + parameters.name;
 
-      node = root.getNodeWithKey("nodes").getArrayElementAt(parameters.index);
+      person = select unique Person from jsonModel
+          where (selected.getNodeWithKey("name").node.asText == parameters.name);
 
-      if (node.getNodeWithKey("type").node.asText != "Person") {
-        log "ERREUR: le node selectionne n'est pas une Person " + node.getNodeWithKey("type").node.asText;
-        node = null;
+      if (person == null) {
+        log "[PersonConcept] Aucun noeud Person trouve";
         return;
       }
 
-      log "Person URI: " + node.getURI();
-      log "Person id: " + this.id();
-      log "Person name: " + this.name();
-      log "Person age: " + this.age();
+      log "[PersonConcept] Person trouvee: " + person;
+      log "[PersonConcept] URI = " + person.getURI();
+      log "[PersonConcept] id = " + this.id();
+      log "[PersonConcept] name = " + this.name();
+      log "[PersonConcept] age = " + this.age();
     }
 
     public String id() {
-      return node.getNodeWithKey("id").node.asText;
-    }
-
-    public String jsonType() {
-      return node.getNodeWithKey("type").node.asText;
+      return person.getNodeWithKey("id").node.asText;
     }
 
     public String name() {
-      return node.getNodeWithKey("name").node.asText;
+      return person.getNodeWithKey("name").node.asText;
     }
 
     public Integer age() {
-      return node.getNodeWithKey("age").node.asInt;
+      return person.getNodeWithKey("age").node.asInt;
     }
 
     delete() {
     }
-  }
-
-  delete() {
   }
 }

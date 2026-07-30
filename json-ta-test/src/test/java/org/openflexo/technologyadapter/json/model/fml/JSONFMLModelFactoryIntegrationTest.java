@@ -51,6 +51,9 @@ import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
 import org.openflexo.foundation.test.fml.AbstractModelFactoryIntegrationTestCase;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
+import org.openflexo.ta.json.JSONTypedModelSlot;
+import org.openflexo.ta.json.fml.editionaction.SelectJSONIndividual;
+import org.openflexo.ta.json.fml.editionaction.SelectUniqueJSONIndividual;
 import org.openflexo.test.OrderedRunner;
 import org.openflexo.test.TestOrder;
 
@@ -82,11 +85,26 @@ public class JSONFMLModelFactoryIntegrationTest extends AbstractModelFactoryInte
 		assertNotNull(taService.getTechnologyAdapter(JSONTechnologyAdapter.class));
 	}
 
+	@Test
+	@TestOrder(2)
+	public void checkTypedModelSlotIsDeclared() {
+		JSONTechnologyAdapter jsonTechnologyAdapter = serviceManager.getTechnologyAdapterService()
+				.getTechnologyAdapter(JSONTechnologyAdapter.class);
+
+		assertNotNull(jsonTechnologyAdapter);
+		assertEquals(true, jsonTechnologyAdapter.hasTypeAwareModelSlot());
+		assertEquals(true, jsonTechnologyAdapter.getAvailableModelSlotTypes().contains(JSONTypedModelSlot.class));
+		assertEquals(true, serviceManager.getTechnologyAdapterService()
+				.getAvailableAbstractFetchRequestActionTypes(JSONTypedModelSlot.class).contains(SelectJSONIndividual.class));
+		assertEquals(true, serviceManager.getTechnologyAdapterService()
+				.getAvailableAbstractFetchRequestActionTypes(JSONTypedModelSlot.class).contains(SelectUniqueJSONIndividual.class));
+	}
+
 	/**
 	 * Check the presence of {@link FMLTechnologyAdapter}, instanciate FMLModelFactory with this TA
 	 */
 	@Test
-	@TestOrder(2)
+	@TestOrder(3)
 	public void checkXXFMLTechnologyAdapter() {
 		log("checkXXFMLTechnologyAdapter()");
 

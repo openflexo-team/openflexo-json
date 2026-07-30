@@ -38,41 +38,37 @@
 
 package org.openflexo.ta.json.rm;
 
-import org.openflexo.foundation.resource.PamelaResource;
-import org.openflexo.foundation.technologyadapter.FlexoModelResource;
-import org.openflexo.pamela.annotations.ImplementationClass;
+import org.openflexo.foundation.resource.FlexoResourceCenter;
+import org.openflexo.foundation.technologyadapter.TechnologyAdapterResourceRepository;
 import org.openflexo.pamela.annotations.ModelEntity;
+import org.openflexo.pamela.exceptions.ModelDefinitionException;
+import org.openflexo.pamela.factory.PamelaModelFactory;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
 import org.openflexo.ta.json.metamodel.JSONSchemaDocument;
-import org.openflexo.ta.json.model.JSONDocument;
-import org.openflexo.ta.json.model.JSONModelFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * A resource storing a {@link JSONDocument}
+ * Repository for {@link JSONSchemaResource}.
  * 
- * @author sylvain
- *
+ * @author Chahrazed
  */
 @ModelEntity
-@ImplementationClass(JSONResourceImpl.class)
-public interface JSONResource
-		extends FlexoModelResource<JSONDocument, JSONSchemaDocument, JSONTechnologyAdapter, JSONTechnologyAdapter>,
-		PamelaResource<JSONDocument, JSONModelFactory> {
+public interface JSONSchemaResourceRepository<I>
+		extends TechnologyAdapterResourceRepository<JSONSchemaResource, JSONTechnologyAdapter, JSONSchemaDocument, I> {
 
-	/**
-	 * Convenient method to retrieve resource data
-	 * 
-	 * @return
-	 */
-	public JSONDocument getJSONDocument();
-
-	@Override
-	public JSONDocument getModelData();
-
-	@Override
-	public JSONDocument getModel();
-
-	public ObjectMapper getObjectMapper();
+	public static <I> JSONSchemaResourceRepository<I> instanciateNewRepository(JSONTechnologyAdapter technologyAdapter,
+			FlexoResourceCenter<I> resourceCenter) {
+		try {
+			PamelaModelFactory factory = new PamelaModelFactory(JSONSchemaResourceRepository.class);
+			@SuppressWarnings("unchecked")
+			JSONSchemaResourceRepository<I> newRepository = factory.newInstance(JSONSchemaResourceRepository.class);
+			newRepository.setTechnologyAdapter(technologyAdapter);
+			newRepository.setResourceCenter(resourceCenter);
+			newRepository.setBaseArtefact(resourceCenter.getBaseArtefact());
+			newRepository.getRootFolder().setRepositoryContext(null);
+			return newRepository;
+		} catch (ModelDefinitionException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

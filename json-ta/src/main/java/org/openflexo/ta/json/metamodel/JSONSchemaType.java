@@ -3,6 +3,9 @@ package org.openflexo.ta.json.metamodel;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
+import org.openflexo.foundation.InnerResourceData;
 import org.openflexo.pamela.annotations.Adder;
 import org.openflexo.pamela.annotations.Embedded;
 import org.openflexo.pamela.annotations.Getter;
@@ -15,7 +18,7 @@ import org.openflexo.pamela.annotations.Setter;
 /** A type declared explicitly or inline in a JSON Schema. */
 @ModelEntity
 @ImplementationClass(JSONSchemaType.JSONSchemaTypeImpl.class)
-public interface JSONSchemaType extends Type {
+public interface JSONSchemaType extends Type, FlexoObject, InnerResourceData<JSONSchemaDocument> {
 
 	enum Kind {
 		OBJECT, ARRAY, STRING, INTEGER, NUMBER, BOOLEAN, NULL, ANY
@@ -31,6 +34,13 @@ public interface JSONSchemaType extends Type {
 	String ALTERNATIVE_TYPES_KEY = "alternativeTypes";
 	String REFERENCED_TYPE_KEY = "referencedType";
 	String ADDITIONAL_PROPERTIES_KEY = "additionalPropertiesAllowed";
+	String SCHEMA_DOCUMENT_KEY = "schemaDocument";
+
+	@Getter(value = SCHEMA_DOCUMENT_KEY, inverse = JSONSchemaDocument.TYPES_KEY)
+	JSONSchemaDocument getSchemaDocument();
+
+	@Setter(SCHEMA_DOCUMENT_KEY)
+	void setSchemaDocument(JSONSchemaDocument schemaDocument);
 
 	@Getter(NAME_KEY)
 	String getName();
@@ -104,7 +114,25 @@ public interface JSONSchemaType extends Type {
 
 	JSONSchemaType getEffectiveType();
 
-	abstract class JSONSchemaTypeImpl implements JSONSchemaType {
+	abstract class JSONSchemaTypeImpl extends FlexoObjectImpl implements JSONSchemaType {
+
+		@Override
+		public JSONSchemaDocument getResourceData() {
+			return getSchemaDocument();
+		}
+
+		@Override
+		public String getLocalIdentifier() {
+			if (getName() != null) {
+				return getName();
+			}
+			return getJsonPointer();
+		}
+
+		@Override
+		public String defaultAbbrevName() {
+			return getName();
+		}
 
 		@Override
 		public JSONSchemaProperty getProperty(String name) {

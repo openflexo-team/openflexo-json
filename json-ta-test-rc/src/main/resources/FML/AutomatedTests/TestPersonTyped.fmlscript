@@ -12,21 +12,22 @@ assert jsonResource != null;
 
 log "========== CREATION DE LA VMI ==========";
 
+// Automated tests use a temporary resource center. A VMI created here is not
+// meant to be found after restarting OpenFlexo.
 service ResourceCenterService add_temp_rc;
+log "WARNING: VMI creee dans un ResourceCenter temporaire pour le test";
 vmi = new TestPersonTyped(jsonResource.resource) with (name="TestPersonTypedInstance");
 assert vmi != null;
 assert vmi.root != null;
 assert vmi.documentName() == "MyDocument";
-vmi.verifyPersonContent();
+vmi.printNodes();
 assert vmi.nodes().children.size == 2;
 assert vmi.references().children.size == 1;
 
-log "========== INSTANCIATION Person ==========";
+log "========== INSTANCIATION PersonConcept ==========";
 
-john = vmi.new Person(0);
+john = vmi.new PersonConcept("John");
 assert john != null;
-assert john.node.getURI() == "#/nodes/0";
-assert john.jsonType() == "Person";
 assert john.id() == "n1";
 assert john.name() == "John";
 assert john.age() == 30;

@@ -39,40 +39,38 @@
 package org.openflexo.ta.json.rm;
 
 import org.openflexo.foundation.resource.PamelaResource;
-import org.openflexo.foundation.technologyadapter.FlexoModelResource;
+import org.openflexo.foundation.technologyadapter.FlexoMetaModelResource;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
+import org.openflexo.ta.json.metamodel.JSONSchema;
 import org.openflexo.ta.json.metamodel.JSONSchemaDocument;
+import org.openflexo.ta.json.metamodel.JSONSchemaFactory;
 import org.openflexo.ta.json.model.JSONDocument;
-import org.openflexo.ta.json.model.JSONModelFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * A resource storing a {@link JSONDocument}
+ * A resource storing a {@link JSONSchema}.
  * 
- * @author sylvain
- *
+ * @author Chahrazed
  */
 @ModelEntity
-@ImplementationClass(JSONResourceImpl.class)
-public interface JSONResource
-		extends FlexoModelResource<JSONDocument, JSONSchemaDocument, JSONTechnologyAdapter, JSONTechnologyAdapter>,
-		PamelaResource<JSONDocument, JSONModelFactory> {
+@ImplementationClass(JSONSchemaResourceImpl.class)
+public interface JSONSchemaResource extends FlexoMetaModelResource<JSONDocument, JSONSchemaDocument, JSONTechnologyAdapter>,
+		PamelaResource<JSONSchemaDocument, JSONSchemaFactory> {
 
 	/**
-	 * Convenient method to retrieve resource data
+	 * Convenient method to retrieve resource data.
 	 * 
-	 * @return
+	 * @return the loaded JSON schema
 	 */
-	public JSONDocument getJSONDocument();
+	public JSONSchema getJSONSchema();
+
+	public JSONSchemaDocument getJSONSchemaDocument();
 
 	@Override
-	public JSONDocument getModelData();
-
-	@Override
-	public JSONDocument getModel();
+	public JSONSchemaDocument getMetaModelData();
 
 	public ObjectMapper getObjectMapper();
 }

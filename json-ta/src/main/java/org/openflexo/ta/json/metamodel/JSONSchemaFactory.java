@@ -8,24 +8,48 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.openflexo.foundation.PamelaResourceModelFactory;
 import org.openflexo.pamela.PamelaMetaModelLibrary;
 import org.openflexo.pamela.exceptions.ModelDefinitionException;
+import org.openflexo.pamela.factory.EditingContext;
 import org.openflexo.pamela.factory.PamelaModelFactory;
 import org.openflexo.ta.json.metamodel.JSONSchemaType.Kind;
+import org.openflexo.ta.json.rm.JSONSchemaResource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** Builds the OpenFlexo metamodel representation from a JSON Schema document. */
-public class JSONSchemaFactory extends PamelaModelFactory {
+public class JSONSchemaFactory extends PamelaModelFactory implements PamelaResourceModelFactory<JSONSchemaResource> {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final Map<String, JSONSchemaType> typesByPointer = new HashMap<>();
+	private final JSONSchemaResource resource;
 	private JSONSchema schema;
 	private String baseURI;
 
 	public JSONSchemaFactory() throws ModelDefinitionException {
 		super(PamelaMetaModelLibrary.retrieveMetaModel(JSONSchema.class));
+		this.resource = null;
+	}
+
+	public JSONSchemaFactory(JSONSchemaResource resource, EditingContext editingContext) throws ModelDefinitionException {
+		super(PamelaMetaModelLibrary.retrieveMetaModel(JSONSchema.class));
+		this.resource = resource;
+		setEditingContext(editingContext);
+	}
+
+	@Override
+	public JSONSchemaResource getResource() {
+		return resource;
+	}
+
+	@Override
+	public void startDeserializing() {
+	}
+
+	@Override
+	public void stopDeserializing() {
 	}
 
 	public JSONSchema parse(InputStream inputStream, String fallbackURI) throws IOException {
