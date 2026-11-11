@@ -18,7 +18,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.ta.json.JSONIndividualType;
 import org.openflexo.ta.json.JSONTypedModelSlot;
 import org.openflexo.ta.json.JSONURIProcessor;
@@ -45,7 +44,6 @@ public interface AbstractSelectJSONIndividual<AT> extends AbstractFetchRequest<J
 	void setSchemaType(JSONSchemaType type);
 
 	@Getter(URI_KEY)
-	@XMLAttribute
 	DataBinding<String> getURI();
 
 	@Setter(URI_KEY)

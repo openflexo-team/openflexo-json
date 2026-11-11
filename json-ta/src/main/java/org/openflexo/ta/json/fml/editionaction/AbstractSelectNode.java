@@ -48,7 +48,6 @@ import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
-import org.openflexo.pamela.annotations.XMLAttribute;
 import org.openflexo.ta.json.JSONModelSlot;
 import org.openflexo.ta.json.JSONURIProcessor;
 import org.openflexo.ta.json.model.JSONDocument;
@@ -76,7 +75,6 @@ public interface AbstractSelectNode<AT> extends AbstractFetchRequest<JSONModelSl
 	String URI_KEY = "uri";
 
 	@Getter(URI_KEY)
-	@XMLAttribute
 	DataBinding<String> getURI();
 
 	@Setter(URI_KEY)

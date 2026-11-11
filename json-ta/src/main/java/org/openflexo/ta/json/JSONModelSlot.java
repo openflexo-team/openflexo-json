@@ -51,7 +51,6 @@ import org.openflexo.foundation.technologyadapter.FreeModelSlot;
 import org.openflexo.foundation.technologyadapter.ModelSlot;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.fml.JSONNodeActorReference;
 import org.openflexo.ta.json.fml.JSONNodeRole;
 import org.openflexo.ta.json.fml.editionaction.*;
@@ -71,7 +70,6 @@ import org.openflexo.ta.json.rm.JSONResource;
 @DeclareActorReferences({ JSONNodeActorReference.class })
 @ModelEntity
 @ImplementationClass(JSONModelSlot.JSONModelSlotImpl.class)
-@XMLElement
 @FML("JSONModelSlot")
 public interface JSONModelSlot extends FreeModelSlot<JSONDocument, JSONResource> {
 

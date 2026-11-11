@@ -47,7 +47,6 @@ import org.openflexo.foundation.fml.rt.ActorReference;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
 import org.openflexo.ta.json.model.JSONNode;
 
@@ -59,7 +58,6 @@ import org.openflexo.ta.json.model.JSONNode;
  */
 @ModelEntity
 @ImplementationClass(JSONNodeRole.JSONNodeRoleImpl.class)
-@XMLElement
 @FML("JSONNodeRole")
 public interface JSONNodeRole extends FlexoRole<JSONNode> {
 

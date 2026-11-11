@@ -17,7 +17,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONIndividualType;
 import org.openflexo.ta.json.JSONTechnologyAdapter;
 import org.openflexo.ta.json.JSONTypedModelSlot;
@@ -26,7 +25,6 @@ import org.openflexo.ta.json.model.JSONNode;
 
 /** A typed role referencing a JSON node conforming to a JSON Schema type. */
 @ModelEntity
-@XMLElement
 @ImplementationClass(JSONIndividualRole.JSONIndividualRoleImpl.class)
 @FML("JSONIndividualRole")
 public interface JSONIndividualRole extends FlexoRole<JSONNode> {

@@ -31,7 +31,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.fml.JSONNodeActorReference;
 import org.openflexo.ta.json.fml.JSONIndividualRole;
 import org.openflexo.ta.json.fml.JSONNodeRole;
@@ -52,7 +51,6 @@ import org.openflexo.ta.json.rm.JSONResource;
 @DeclareActorReferences({ JSONNodeActorReference.class })
 @ModelEntity
 @ImplementationClass(JSONTypedModelSlot.JSONTypedModelSlotImpl.class)
-@XMLElement
 @FML("JSONTypedModelSlot")
 public interface JSONTypedModelSlot extends TypeAwareModelSlot<JSONDocument, JSONSchemaDocument, JSONResource> {
 

@@ -17,8 +17,6 @@ import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.pamela.annotations.XMLAttribute;
-import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.ta.json.JSONModelSlot;
 import org.openflexo.ta.json.model.JSONNode;
 
@@ -30,7 +28,6 @@ import org.openflexo.ta.json.model.JSONNode;
 
 @ModelEntity
 @ImplementationClass(AddNode.AddNodeImpl.class)
-@XMLElement
 @FML("AddNode")
 public interface AddNode extends JSONAction<JSONNode> {
 
@@ -41,7 +38,6 @@ public interface AddNode extends JSONAction<JSONNode> {
     public static final String CONTENT_KEY = "content";
 
     @Getter(value = KEY_KEY)
-    @XMLAttribute
     @FMLAttribute(value = KEY_KEY, required = false, description = "")
 
     public DataBinding<String> getKey();
@@ -50,7 +46,6 @@ public interface AddNode extends JSONAction<JSONNode> {
     public void setKey(DataBinding<String> key);
 
     @Getter(value = CONTENT_KEY)
-    @XMLAttribute
     @FMLAttribute(value = CONTENT_KEY, required = false, description = "")
     public DataBinding<Object> getContent();
 
