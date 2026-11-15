@@ -1,5 +1,6 @@
 package org.openflexo.ta.json.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +81,7 @@ public interface AbstractSelectJSONIndividual<AT> extends AbstractFetchRequest<J
 		}
 
 		@Override
-		public List<JSONNode> performExecute(RunTimeEvaluationContext evaluationContext) {
+		public List<JSONNode> performExecute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 			JSONDocument jsonDocument = getReceiver(evaluationContext);
 			List<JSONNode> candidates = new ArrayList<>();
 

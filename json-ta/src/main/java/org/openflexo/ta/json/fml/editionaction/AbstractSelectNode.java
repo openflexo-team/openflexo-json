@@ -38,6 +38,7 @@
 
 package org.openflexo.ta.json.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.editionaction.AbstractFetchRequest;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.connie.DataBinding;
@@ -92,7 +93,7 @@ public interface AbstractSelectNode<AT> extends AbstractFetchRequest<JSONModelSl
 		}
 
 		@Override
-		public List<JSONNode> performExecute(RunTimeEvaluationContext evaluationContext) {
+		public List<JSONNode> performExecute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 			JSONDocument jsonDocument = getReceiver(evaluationContext);
 			List<JSONNode> selectedJsonNodes = new ArrayList<>(0);
 			String selectedURI = null;

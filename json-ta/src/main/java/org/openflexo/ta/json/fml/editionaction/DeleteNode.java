@@ -1,5 +1,6 @@
 package org.openflexo.ta.json.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
@@ -59,7 +60,7 @@ public interface DeleteNode extends JSONAction<JSONNode> {
         }
 
         @Override
-        public JSONNode execute(RunTimeEvaluationContext evaluationContext) {
+        public JSONNode execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 
             String keyToDelete;
             try {
