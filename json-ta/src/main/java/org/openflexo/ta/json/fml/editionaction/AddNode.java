@@ -1,13 +1,14 @@
 package org.openflexo.ta.json.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLTypeError;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.annotations.FMLAttribute;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
@@ -68,21 +69,11 @@ public interface AddNode extends JSONAction<JSONNode> {
 
         @Override
         public JSONNode execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
-            String key;
-            Object content;
-            try {
-                key = getKey().getBindingValue(evaluationContext);
-                content = getContent().getBindingValue(evaluationContext);
-            } catch (TypeMismatchException e) {
-                throw new RuntimeException(e);
-            } catch (NullReferenceException e) {
-                throw new RuntimeException(e);
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
+            String key = FMLEvaluation.evaluate(getKey(), evaluationContext, this);
+            Object content = FMLEvaluation.evaluate(getContent(), evaluationContext, this);
 
             if (content == null) {
-                throw new IllegalArgumentException("AddNode: content evaluated to null");
+                throw new FMLNullReferenceError("AddNode: content evaluated to null");
             }
 
             if (!(content instanceof String) &&
@@ -92,14 +83,14 @@ public interface AddNode extends JSONAction<JSONNode> {
                     !(content instanceof java.util.Map) &&
                     !(content instanceof java.util.List)) {
 
-                throw new IllegalArgumentException(
+                throw new FMLTypeError(
                         "Unsupported content type for AddNode: " + content.getClass().getName()
                 );
             }
 
             JSONNode receiver = getReceiver(evaluationContext);
             if (receiver == null) {
-                throw new IllegalArgumentException("AddNode: receiver evaluated to null");
+                throw new FMLNullReferenceError("AddNode: receiver evaluated to null");
             }
             return receiver.createNode(key, content);
 

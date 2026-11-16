@@ -1,12 +1,12 @@
 package org.openflexo.ta.json.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.foundation.fml.annotations.FML;
 import org.openflexo.foundation.fml.annotations.FMLAttribute;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
@@ -61,17 +61,10 @@ public interface DeleteNode extends JSONAction<JSONNode> {
 
         @Override
         public JSONNode execute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
-
-            String keyToDelete;
-            try {
-                keyToDelete = getKey().getBindingValue(evaluationContext);
-            } catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
-
+            String keyToDelete = FMLEvaluation.evaluate(getKey(), evaluationContext, this);
             JSONNode receiver = getReceiver(evaluationContext);
             if (receiver == null) {
-                throw new IllegalArgumentException("DeleteNode: receiver evaluated to null");
+                throw new FMLNullReferenceError("DeleteNode: receiver evaluated to null");
             }
             return receiver.deleteNode(keyToDelete);
         }

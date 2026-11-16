@@ -1,5 +1,7 @@
 package org.openflexo.ta.json.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -7,8 +9,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.type.ProxyType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.foundation.fml.annotations.FMLAttribute;
@@ -83,6 +83,10 @@ public interface AbstractSelectJSONIndividual<AT> extends AbstractFetchRequest<J
 		@Override
 		public List<JSONNode> performExecute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 			JSONDocument jsonDocument = getReceiver(evaluationContext);
+			if (jsonDocument == null) {
+				// A null source (CORE-F-11)
+				throw new FMLNullReferenceError(getStringRepresentation() + ": nothing to select from");
+			}
 			List<JSONNode> candidates = new ArrayList<>();
 
 			if (jsonDocument == null || jsonDocument.getRootNode() == null) {
@@ -109,16 +113,9 @@ public interface AbstractSelectJSONIndividual<AT> extends AbstractFetchRequest<J
 			return filterWithConditions(typedCandidates, evaluationContext);
 		}
 
-		private String evaluateURI(RunTimeEvaluationContext evaluationContext) {
-			if (getURI().isSet()) {
-				try {
-					return getURI().getBindingValue(evaluationContext);
-				}
-				catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
-					e.printStackTrace();
-				}
-			}
-			return null;
+		private String evaluateURI(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
+			// A failing URI is an error: null selected every node of the type (CORE-F-11)
+			return getURI().isSet() ? FMLEvaluation.evaluate(getURI(), evaluationContext, this) : null;
 		}
 
 		private void collect(JSONNode node, List<JSONNode> nodes) {

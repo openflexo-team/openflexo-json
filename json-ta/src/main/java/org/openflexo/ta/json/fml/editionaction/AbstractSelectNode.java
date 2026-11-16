@@ -38,12 +38,12 @@
 
 package org.openflexo.ta.json.fml.editionaction;
 
+import org.openflexo.foundation.fml.rt.error.FMLNullReferenceError;
+import org.openflexo.foundation.fml.rt.error.FMLEvaluation;
 import org.openflexo.foundation.fml.rt.error.FMLExecutionException;
 import org.openflexo.foundation.fml.editionaction.AbstractFetchRequest;
 import org.openflexo.foundation.fml.rt.RunTimeEvaluationContext;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.Getter;
@@ -95,16 +95,15 @@ public interface AbstractSelectNode<AT> extends AbstractFetchRequest<JSONModelSl
 		@Override
 		public List<JSONNode> performExecute(RunTimeEvaluationContext evaluationContext) throws FMLExecutionException {
 			JSONDocument jsonDocument = getReceiver(evaluationContext);
+			if (jsonDocument == null) {
+				// A null source (CORE-F-11)
+				throw new FMLNullReferenceError(getStringRepresentation() + ": nothing to select from");
+			}
 			List<JSONNode> selectedJsonNodes = new ArrayList<>(0);
 			String selectedURI = null;
 
 			if (getURI().isSet()) {
-				try {
-					selectedURI = getURI().getBindingValue(evaluationContext);
-				}
-				catch (TypeMismatchException | NullReferenceException | ReflectiveOperationException e) {
-                    e.printStackTrace();
-				}
+				selectedURI = FMLEvaluation.evaluate(getURI(), evaluationContext, this);
 			}
 			if (selectedURI != null) {
 				JSONNode selected = JSONURIProcessor.retrieveObjectWithURI(jsonDocument, selectedURI);
