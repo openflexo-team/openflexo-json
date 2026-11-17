@@ -13,8 +13,8 @@ public model CompleteJSONDemo {
 
   create(required Resource<JSONDocument> jsonResource) {
     log "[CompleteJSONDemo] Creation de la VirtualModelInstance";
-    log "[CompleteJSONDemo] Ressource JSON: " + parameters.jsonResource;
-    connect document using parameters.jsonResource;
+    log "[CompleteJSONDemo] Ressource JSON: " + jsonResource;
+    connect document using jsonResource;
     log "[CompleteJSONDemo] Document connecte: " + document;
     log "[CompleteJSONDemo] Contenu initial: " + document.getContents();
   }
@@ -28,7 +28,7 @@ public model CompleteJSONDemo {
   }
 
   public JSONNode getComponent(Integer index) {
-    return document.rootNode.getNodeWithKey("components").getArrayElementAt(parameters.index);
+    return document.rootNode.getNodeWithKey("components").getArrayElementAt(index);
   }
 
   public String jsonContents() {
@@ -43,13 +43,13 @@ public model CompleteJSONDemo {
     JSONNode component;
 
     create(required String elementKey, required Integer elementIndex) {
-      log "[JSONManipulation] Recherche de la cle: " + parameters.elementKey;
-      JSONNode selectedNode = document.rootNode.getNodeWithKey(parameters.elementKey);
+      log "[JSONManipulation] Recherche de la cle: " + elementKey;
+      JSONNode selectedNode = document.rootNode.getNodeWithKey(elementKey);
       log "[JSONManipulation] Noeud trouve pour la cle: " + selectedNode.node.toString;
 
-      if (selectedNode.node.isArray() && parameters.elementIndex >= 0) {
-        log "[JSONManipulation] Le noeud est un tableau, utilisation de l'index: " + parameters.elementIndex;
-        component = selectedNode.getArrayElementAt(parameters.elementIndex);
+      if (selectedNode.node.isArray() && elementIndex >= 0) {
+        log "[JSONManipulation] Le noeud est un tableau, utilisation de l'index: " + elementIndex;
+        component = selectedNode.getArrayElementAt(elementIndex);
       }
       else {
         log "[JSONManipulation] Utilisation directe du noeud identifie par la cle";
@@ -65,8 +65,8 @@ public model CompleteJSONDemo {
 
     public JSONNode addStatus(String status) {
       log "[JSONManipulation.addStatus] Avant: " + component.node.toString;
-      log "[JSONManipulation.addStatus] Valeur ajoutee: " + parameters.status;
-      JSONNode created = component.createNode("status",parameters.status);
+      log "[JSONManipulation.addStatus] Valeur ajoutee: " + status;
+      JSONNode created = component.createNode("status",status);
       log "[JSONManipulation.addStatus] Noeud cree, URI=" + created.getURI();
       log "[JSONManipulation.addStatus] Apres: " + component.node.toString;
       return created;

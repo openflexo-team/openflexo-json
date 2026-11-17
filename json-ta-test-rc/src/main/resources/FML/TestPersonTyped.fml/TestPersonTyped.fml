@@ -27,7 +27,7 @@ public model TestPersonTyped {
   create(required Resource<JSONDocument> jsonResource) {
     log "[TestPersonTyped] Creation de la VMI";
 
-    connect jsonModel using parameters.jsonResource;
+    connect jsonModel using jsonResource;
     root = jsonModel.rootNode;
 
     log "[TestPersonTyped] Root URI: " + root.getURI();
@@ -60,12 +60,12 @@ public model TestPersonTyped {
   }
 
   public JSONNode nodeAt(int index) {
-    return this.nodes().getArrayElementAt(parameters.index);
+    return this.nodes().getArrayElementAt(index);
   }
 
   public JSONNode findNodeByName(String name) {
     for (JSONNode candidate : this.nodes().children) {
-      if (candidate.getNodeWithKey("name").node.asText == parameters.name) {
+      if (candidate.getNodeWithKey("name").node.asText == name) {
         return candidate;
       }
     }
@@ -80,10 +80,10 @@ public model TestPersonTyped {
     Person person with JSONIndividualRole(container=jsonModel, schemaType=PERSON_TYPE);
 
     create(required String name) {
-      log "[PersonConcept] Recherche Person name=" + parameters.name;
+      log "[PersonConcept] Recherche Person name=" + name;
 
       person = select unique Person from jsonModel
-          where (selected.getNodeWithKey("name").node.asText == parameters.name);
+          where (selected.getNodeWithKey("name").node.asText == name);
 
       if (person == null) {
         log "[PersonConcept] Aucun noeud Person trouve";

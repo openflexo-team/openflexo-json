@@ -19,7 +19,7 @@ model TestRole {
   create(required Resource<JSONDocument> jsonResource) {
     log "Creation de la VMI";
     
-    connect jsonModel using parameters.jsonResource;
+    connect jsonModel using jsonResource;
     
     root = jsonModel.rootNode;
     
@@ -42,7 +42,7 @@ model TestRole {
   }
   
   public JSONNode nodeAt(int index) {
-    return this.nodes().getArrayElementAt(parameters.index);
+    return this.nodes().getArrayElementAt(index);
   }
  
   public  String documentName() {
@@ -83,7 +83,7 @@ model TestRole {
     
     create(required int index) {
       
-      node = root.getNodeWithKey("nodes").getArrayElementAt(parameters.index);
+      node = root.getNodeWithKey("nodes").getArrayElementAt(index);
 
       if (node.getNodeWithKey("type").node.asText != "Person") {
           log "ERREUR: le node selectionne n'est pas une Person " + node.getNodeWithKey("type").node.asText;

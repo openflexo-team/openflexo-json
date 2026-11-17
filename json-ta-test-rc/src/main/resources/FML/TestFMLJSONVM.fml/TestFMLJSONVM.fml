@@ -14,7 +14,7 @@ public model TestFMLJSONVM {
    JSONDocument document with JSONModelSlot();
 
    create(required Resource<JSONDocument> doc) {
-      connect document using parameters.doc;
+      connect document using doc;
       log "DocumentJSON: " + document;
    }
 
@@ -22,7 +22,7 @@ public model TestFMLJSONVM {
       JSONNode sourceNode;
 
       create::_create(String aKey) {
-         sourceNode = document.rootNode.getNodeWithKey(parameters.aKey);
+         sourceNode = document.rootNode.getNodeWithKey(aKey);
       }
 
       public void logContent() {
