@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.ta.json.AbstractJSONTest;
@@ -84,7 +84,7 @@ public class TestLoadJSONDocuments extends AbstractJSONTest {
 					e.printStackTrace();
 				} catch (ResourceLoadingCancelledException e) {
 					e.printStackTrace();
-				} catch (FlexoException e) {
+				} catch (OpenflexoRuntimeException e) {
 					e.printStackTrace();
 				}
 				assertNotNull(jsonResource.getLoadedResourceData());

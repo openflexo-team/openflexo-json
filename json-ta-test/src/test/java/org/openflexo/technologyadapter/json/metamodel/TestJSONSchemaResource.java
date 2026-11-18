@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.FileNotFoundException;
 
 import org.junit.Test;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.ta.json.AbstractJSONTest;
@@ -60,7 +60,7 @@ public class TestJSONSchemaResource extends AbstractJSONTest {
 			e.printStackTrace();
 		} catch (ResourceLoadingCancelledException e) {
 			e.printStackTrace();
-		} catch (FlexoException e) {
+		} catch (OpenflexoRuntimeException e) {
 			e.printStackTrace();
 		}
 		return null;

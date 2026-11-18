@@ -13,7 +13,7 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.fml.FMLCompilationUnit;
 import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.annotations.DeclareActorReferences;
@@ -125,7 +125,7 @@ public interface JSONTypedModelSlot extends TypeAwareModelSlot<JSONDocument, JSO
 				e.printStackTrace();
 			} catch (ResourceLoadingCancelledException e) {
 				e.printStackTrace();
-			} catch (FlexoException e) {
+			} catch (OpenflexoRuntimeException e) {
 				e.printStackTrace();
 			}
 		}

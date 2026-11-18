@@ -42,7 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.IOFlexoException;
 import org.openflexo.foundation.resource.PamelaResourceImpl;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
@@ -82,7 +82,7 @@ public abstract class JSONSchemaResourceImpl extends PamelaResourceImpl<JSONSche
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
-		} catch (FlexoException e) {
+		} catch (OpenflexoRuntimeException e) {
 			e.printStackTrace();
 		}
 		return null;
